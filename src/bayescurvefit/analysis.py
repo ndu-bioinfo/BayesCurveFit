@@ -262,13 +262,15 @@ class BayesAnalysis:
                     self.data.OPTIMAL_PARAM_STD_[i],
                 )
                 lower, upper = self.bounds[i]
-                sim_parameters[:, i] = truncated_normal(
+                random_values = truncated_normal(
                     loc=loc,
                     scale=scale,
                     lower=lower,
                     upper=upper,
                     num_sim_samples=num_sim_samples,
                 )
+                np.random.shuffle(random_values)
+                sim_parameters[:, i] = random_values
             sim_ys = np.array(
                 [self.fit_func(s_range, *params) for params in sim_parameters]
             )
