@@ -1,8 +1,6 @@
-# tests/test_data_classes.py
-
 import unittest
 import numpy as np
-from biobayesfit.data_classes import SA_Results, MCMC_Results, Data
+from bayescurvefit.data_classes import SA_Results, MCMC_Results, Data
 
 
 class TestDataClasses(unittest.TestCase):

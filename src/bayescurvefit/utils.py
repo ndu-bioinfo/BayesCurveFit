@@ -250,7 +250,7 @@ def calc_bma(best_gmm: GaussianMixture):
     return [bma_mean, bma_std]
 
 
-def compute_fdr(bic0: float, bic1: float):
+def compute_npp(bic0: float, bic1: float):
     """
     Compute null model probability
 
