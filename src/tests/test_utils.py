@@ -12,7 +12,7 @@ from bayescurvefit.utils import (
     calculate_bic,
     fit_prosterior,
     calc_bma,
-    compute_npp,
+    compute_pep,
     truncated_normal,
 )
 
@@ -105,11 +105,11 @@ class TestUtilsFromFiles(unittest.TestCase):
         self.assertAlmostEqual(bma_mean, expected_bma_mean, places=5)
         self.assertAlmostEqual(bma_std, expected_bma_std, places=5)
 
-    def test_compute_npp(self):
+    def test_compute_pep(self):
         bic0 = 1.
         bic1 = 1.5
-        npp = compute_npp(bic0, bic1)
-        self.assertAlmostEqual(npp, 0.562176, places=5)
+        pep = compute_pep(bic0, bic1)
+        self.assertAlmostEqual(pep, 0.562176, places=5)
 
     def test_truncated_normal(self):
         loc = 0
