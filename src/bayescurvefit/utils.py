@@ -250,9 +250,9 @@ def calc_bma(best_gmm: GaussianMixture):
     return [bma_mean, bma_std]
 
 
-def compute_npp(bic0: float, bic1: float):
+def compute_pep(bic0: float, bic1: float):
     """
-    Compute null model probability
+    Compute prosterior error probability
 
     Args:
         bic0: BIC of null model

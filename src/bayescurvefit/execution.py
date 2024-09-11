@@ -8,7 +8,7 @@ from emcee.moves import DESnookerMove, StretchMove
 from .analysis import BayesAnalysis
 from .bayesfit import BayesFit
 from .distribution import SimplePDF
-from .utils import calculate_bic, compute_npp
+from .utils import calculate_bic, compute_pep
 
 PDF_FUNCTION = SimplePDF(fixed_pdf_params=[1, 0.05]).mixture_pdf
 
@@ -149,7 +149,7 @@ class BayesFitModel:
             self.bayes_fit_pipe.data.ndim,
             len(self.y_data),
         )
-        npp = compute_npp(bic0, bic1)
+        pep = compute_pep(bic0, bic1)
 
         rmse = np.sqrt(
             np.mean(
@@ -171,26 +171,26 @@ class BayesFitModel:
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
                 + [
                     rmse,
-                    npp,
-                    not self.bayes_fit_pipe.data.mcmc_results.CONVERGE_ and npp > 0.01,
+                    pep,
+                    not self.bayes_fit_pipe.data.mcmc_results.CONVERGE_ and pep > 0.01,
                 ]
             )
             output_names = (
                 [f"fit_{v}" for v in self.param_names]
                 + [f"std_{v}" for v in self.param_names]
                 + self.nuisance_names
-                + ["rmse", "npp", "convergence_warning"]
+                + ["rmse", "pep", "convergence_warning"]
             )
         else:
             output_values = (
                 list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_)
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
-                + [rmse, npp]
+                + [rmse, pep]
             )
             output_names = (
                 [f"fit_{v}" for v in self.param_names]
                 + self.nuisance_names
-                + ["rmse", "npp"]
+                + ["rmse", "pep"]
             )
         return pd.Series(output_values, index=output_names)
 

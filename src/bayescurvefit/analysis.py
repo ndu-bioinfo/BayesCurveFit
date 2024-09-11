@@ -232,6 +232,7 @@ class BayesAnalysis:
         max_label_length=30,
         truth_params=None,
         show_ci: float = 0.95,
+        ax = None
     ):
         """
         Plot the fitted curve with confidence intervals, observations, and optional OLS and truth fits.
@@ -252,7 +253,8 @@ class BayesAnalysis:
             ]
         )
 
-        _, ax = plt.subplots(figsize=figsize)
+        if ax is None:
+            _, ax = plt.subplots(figsize=figsize)
 
         if self.mcmc_results.SAMPLES_ is not None and show_ci > 0:
             sim_parameters = np.zeros((num_sim_samples, self.ndim))
@@ -337,3 +339,7 @@ class BayesAnalysis:
         wrapped_labels = [textwrap.fill(label, max_label_length) for label in labels]
         ax.legend(handles, wrapped_labels)
         ax.set_title(title)
+        if ax is None:
+            return ax
+        else:
+            return None
