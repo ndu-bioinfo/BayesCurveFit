@@ -163,13 +163,14 @@ class BayesFitModel:
                 ** 2
             )
         )
+        null_mean = self.bayes_fit_null.data.OPTIMAL_PARAM_[0]
 
         if self.run_mcmc:
             output_values = (
                 list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_)
                 + list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_STD_)
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
-                + [
+                + [null_mean,
                     rmse,
                     pep,
                     not self.bayes_fit_pipe.data.mcmc_results.CONVERGE_ and pep > 0.01,
@@ -179,18 +180,18 @@ class BayesFitModel:
                 [f"fit_{v}" for v in self.param_names]
                 + [f"std_{v}" for v in self.param_names]
                 + self.nuisance_names
-                + ["rmse", "pep", "convergence_warning"]
+                + ["null_mean", "rmse", "pep", "convergence_warning"]
             )
         else:
             output_values = (
                 list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_)
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
-                + [rmse, pep]
+                + [null_mean, rmse, pep]
             )
             output_names = (
                 [f"fit_{v}" for v in self.param_names]
                 + self.nuisance_names
-                + ["rmse", "pep"]
+                + ["null_mean", "rmse", "pep"]
             )
         return pd.Series(output_values, index=output_names)
 

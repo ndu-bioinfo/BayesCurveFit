@@ -230,6 +230,7 @@ class BayesAnalysis:
         show_ols_fit=True,
         title="",
         max_label_length=30,
+        show_fitting_params=False,
         truth_params=None,
         show_ci: float = 0.95,
         ax = None
@@ -295,7 +296,7 @@ class BayesAnalysis:
             x=s_range,
             y=self.fit_func(s_range, *self.OPTIMAL_PARAM_),
             color="blue",
-            label=f"Bayes: {label_bayes_params}",
+            label=f"BayesCurveFit: {label_bayes_params}" if show_fitting_params else "BayesCurveFit",
             ax=ax,
         )
 
@@ -313,7 +314,7 @@ class BayesAnalysis:
                 y=self.fit_func(s_range, *fit_params),
                 color="red",
                 dashes=[5, 1],
-                label=f"OLS: {label_fit_params}",
+                label=f"OLS: {label_fit_params}" if show_fitting_params else "OLS",
                 ax=ax,
             )
 
@@ -330,7 +331,7 @@ class BayesAnalysis:
                 y=self.fit_func(s_range, *truth_params),
                 color="green",
                 dashes=[3, 1],
-                label=f"Truth: {label_true_params}",
+                label=f"Truth: {label_true_params}" if show_fitting_params else "Truth",
                 ax=ax,
             )
 
