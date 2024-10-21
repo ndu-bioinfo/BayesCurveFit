@@ -21,7 +21,7 @@ class BayesFitModel:
         fit_function: Callable,
         params_range: List[Tuple[float, float]],
         param_names: Optional[List[str]] = None,
-        run_mcmc: bool = False,
+        run_mcmc: bool = True,
         mcmc_sampler: Optional[emcee.moves.Move] = None,
         bw_method: Union[str, float] = 1e-3,
         verbose: int = 0,
