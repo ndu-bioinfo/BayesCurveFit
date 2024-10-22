@@ -19,7 +19,7 @@ class Simulation:
     ):
 
         """
-        Simulating data with noise sampled and potential outliers for curve fitting from user specificed probability density function and fitting function .
+        Simulating data with noise sampled and potential outliers for curve fitting from user specified probability density function and fitting function .
 
         args:
             fit_function: The fitting function.
