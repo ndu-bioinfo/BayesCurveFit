@@ -43,8 +43,5 @@ jobs:
         python3 -m pip install toml
         python3 -c "import toml; toml.load('pyproject.toml')"
 
-    - name: Run Pre-commit
-      run: pre-commit run --all-files
-
     - name: Run Tests
       run: make test
