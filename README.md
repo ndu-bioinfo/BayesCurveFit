@@ -1,14 +1,23 @@
 # BayesCurveFit
 
-BayesCurveFit: A Bayesian Inference Workflow for Enhanced Curve Fitting in Undersampled Drug Discovery Data
+BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference
 
 ## Overview
 BayesCurveFit is a Python package designed to apply Bayesian inference for curve fitting, especially tailored for undersampled and outlier-contaminated data. It supports advanced model fitting and uncertainty estimation for biological data, such as dose-response curves in drug discovery.
 
-This example demonstrates how to use the BayesCurveFit package to perform a 4-parameter log-logistic model fit using Bayesian inference.
+## Installation Guide
+
+To install the project and its dependencies, run the following command:
+
+```bash
+make install
+
+```
 
 # BayesCurveFit General workflow
 
+### Define the Curve Fitting Function and Input Data
+In this example, we use the log-logistic 4-parameter model.
 
 ```python
 import numpy as np
@@ -35,7 +44,8 @@ run = BayesFitModel(
     param_names=param_names,
 )
 ```
-
+### Retrieve the Fitting Results
+After running the model, you can retrieve the results using the get_result() method:
 
 ```python
 # Retrive results
@@ -62,7 +72,8 @@ run.get_result()
 
 
 
-
+### Visualize the Fitting Results
+You can visualize the fitted curve with the following code:
 ```python
 # Visualizing fitting results for individual runs
 import matplotlib.pyplot as plt
@@ -84,7 +95,8 @@ ax.set_ylabel("Relative Site Response")
 ![png](public/demo_3_1.png)
     
 
-
+### Perform Sampling Diagnoses
+You can also visualize pairwise comparisons for your fitted parameters with the following:
 
 ```python
 # SA and MCMC sampling diagnoses 
@@ -96,7 +108,8 @@ run.analysis.plot_pairwise_comparison(figsize=(10, 10))
 ![png](public/demo_4_0.png)
     
 
-
+### Visualize the Error Distribution of Fitted Parameters
+To view the distribution of the fitted parameters, use the following:
 
 ```python
 # Error distribution of fitted parameters
@@ -109,7 +122,9 @@ run.analysis.plot_param_dist()
     
 
 
-# Other dose-response like equations can be processed similarly
+# Other Dose-Response Equations
+You can use BayesCurveFit for other common dose-response equations, such as the Michaelis-Menten model. Below is an example using the Michaelis-Menten equation:
+
 
 
 ```python
