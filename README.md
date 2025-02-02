@@ -92,7 +92,7 @@ ax.set_ylabel("Relative Site Response")
 
 
     
-![png](public/demo_3_1.png)
+![png](public/demo_1_0.png)
     
 
 ### Perform Sampling Diagnoses
@@ -105,7 +105,7 @@ run.analysis.plot_pairwise_comparison(figsize=(10, 10))
 
 
     
-![png](public/demo_4_0.png)
+![png](public/demo_1_1.png)
     
 
 ### Visualize the Error Distribution of Fitted Parameters
@@ -118,7 +118,7 @@ run.analysis.plot_param_dist()
 
 
     
-![png](public/demo_5_0.png)
+![png](public/demo_1_2.png)
     
 
 
@@ -180,3 +180,4 @@ ax.set_xlabel("Substrate Concentration [S] (M)")
 ax.set_ylabel("Relative Response (V/V_max)")
 
 ```
+![png](public/demo_2_0.png)
