@@ -9,24 +9,24 @@ def log_logistic_4p(x: np.ndarray, pec50: float, slope: float, front: float, bac
 
 # Sample data input
 x_data = np.array([-9.0, -8.3, -7.6, -6.9, -6.1, -5.4, -4.7, -4.0])
-y_data = np.array([1.12, 0.74, 1.03, 1.08, 0.76, 0.61, 0.39, 0.38])
+y_data = np.array([1.10, 0.75, 1.05, 1.08, 0.76, 0.61, 0.39, 0.38])
 params_range = [(5, 8), (0.01, 10), (0.28, 1.22), (0.28, 1.22)]
 param_names = ["pec50", "slope", "front", "back"]
 
 # Expected output based on the result from your example
 expected_result = {
-    "fit_pec50": 5.855744,
-    "fit_slope": 1.162382,
-    "fit_front": 1.055521,
-    "fit_back": 0.382905,
-    "std_pec50": 0.203935,
-    "std_slope": 0.549992,
-    "std_front": 0.064507,
-    "std_back": 0.049695,
-    "est_std": 0.089587,
-    "null_mean": 0.762365,
-    "rmse": 0.121321,
-    "pep": 0.067176,
+    "fit_pec50": 5.863955,
+    "fit_slope": 1.017474,
+    "fit_front": 1.078859,
+    "fit_back": 0.374161,
+    "std_pec50": 0.163006,
+    "std_slope": 0.342437,
+    "std_front": 0.054771,
+    "std_back": 0.044887,
+    "est_std": 0.083432,
+    "null_mean": 0.765076,
+    "rmse": 0.121808,
+    "pep": 0.038892,
     "convergence_warning": False
 }
 
