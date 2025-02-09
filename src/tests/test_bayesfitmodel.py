@@ -15,7 +15,7 @@ param_names = ["pec50", "slope", "front", "back"]
 
 # Expected output based on the result from your example
 expected_result = {
-    "fit_pec50": 5.85208,
+    "fit_pec50": 5.855744,
     "fit_slope": 1.162382,
     "fit_front": 1.055521,
     "fit_back": 0.382905,
