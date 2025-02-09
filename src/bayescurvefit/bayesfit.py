@@ -175,7 +175,7 @@ class BayesFit:
         Returns:
             np.ndarray: An array of randomly generated starting positions.
         """
-        kwargs.setdefault("seed", np.random.default_rng(self.seed))
+        kwargs.setdefault("seed", self.seed)
         kwargs.setdefault("optimization", "lloyd")
         if self.update_nuisance:
             lhs_engine = LatinHypercube(d=len(self.data.bounds), **kwargs)
@@ -392,9 +392,8 @@ class BayesFit:
         Raises:
             ValueError: If auto converge is set to True and not enough chains converge after multiple attempts.
         """
-        np.random.seed(self.seed)
         self.update_nuisance = solve_nuisance
-
+        np.random.seed(self.seed)
         if solve_nuisance:
             assert self.data.n_nuisance > 0, "No nuisance parameters specified"
             self.lower_bounds, self.upper_bounds = np.transpose(self.data.bounds)
