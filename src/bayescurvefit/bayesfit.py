@@ -175,7 +175,7 @@ class BayesFit:
         Returns:
             np.ndarray: An array of randomly generated starting positions.
         """
-        kwargs.setdefault("seed", self.seed)
+        kwargs.setdefault("seed", np.random.default_rng(self.seed))
         kwargs.setdefault("optimization", "lloyd")
         if self.update_nuisance:
             lhs_engine = LatinHypercube(d=len(self.data.bounds), **kwargs)

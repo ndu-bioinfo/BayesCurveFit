@@ -15,20 +15,21 @@ param_names = ["pec50", "slope", "front", "back"]
 
 # Expected output based on the result from your example
 expected_result = {
-    "fit_pec50": 5.863955,
-    "fit_slope": 1.017474,
-    "fit_front": 1.078859,
-    "fit_back": 0.374161,
-    "std_pec50": 0.163006,
-    "std_slope": 0.342437,
-    "std_front": 0.054771,
-    "std_back": 0.044887,
-    "est_std": 0.083432,
-    "null_mean": 0.765076,
-    "rmse": 0.121808,
-    "pep": 0.038892,
-    "convergence_warning": False
+    "fit_pec50":5.8263,
+    "fit_slope":0.9744,
+    "fit_front":1.0769,
+    "fit_back":0.3611,
+    "std_pec50":0.1595,
+    "std_slope":0.3459,
+    "std_front":0.0561,
+    "std_back":0.0466,
+    "est_std":0.084,
+    "null_mean":0.765,
+    "rmse":0.121,
+    "pep":0.0377,
+    "convergence_warning":False,
 }
+
 
 class TestBayesFitModel(unittest.TestCase):
 

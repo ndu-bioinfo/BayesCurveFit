@@ -35,7 +35,7 @@ setup(
         "pandas>=2.0",
         "matplotlib",
         "seaborn",
-        "scipy>=1.7.1",
+        "scipy>=1.7.1,<1.15.0",
         "tqdm",
         "scikit-learn>=1.5.0",
         "emcee>=3.1.6",
