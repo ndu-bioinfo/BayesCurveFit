@@ -52,19 +52,21 @@ After running the model, you can retrieve the results using the get_result() met
 run.get_result()
 ```
 
-fit_pec50              5.855744
-fit_slope              1.088774
-fit_front              1.063355
-fit_back               0.376912
-std_pec50              0.184996
-std_slope              0.399462
-std_front              0.061905
-std_back               0.050635
-est_std                0.089587
-null_mean              0.762365
-rmse                   0.122646
-pep                    0.062768
-
+```bash
+fit_pec50             5.855744  
+fit_slope             1.088774  
+fit_front             1.063355  
+fit_back              0.376912  
+std_pec50             0.184996  
+std_slope             0.399462  
+std_front             0.061905  
+std_back              0.050635  
+est_std               0.089587  
+null_mean             0.762365  
+rmse                  0.122646  
+pep                   0.062768  
+convergence_warning   False
+```
 
 
 ### Visualize the Fitting Results
@@ -166,16 +168,17 @@ run_mm = BayesFitModel(
 ```python
 run_mm.get_result()
 ```
-
-fit_vmax               1.075649
-fit_km                 1.599924
-std_vmax               0.125697
-std_km                 0.662758
-est_std                0.085374
-null_mean               0.77585
-rmse                   0.146565
-pep                    0.097757
-convergence_warning       False
+```bash
+fit_vmax               1.075649  
+fit_km                 1.599924  
+std_vmax               0.125697  
+std_km                 0.662758  
+est_std                0.085374  
+null_mean              0.77585  
+rmse                   0.146565  
+pep                    0.097757  
+convergence_warning    False  
+```
 
 ```python
 f,ax = plt.subplots()
