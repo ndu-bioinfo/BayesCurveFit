@@ -40,3 +40,16 @@ jobs:
 
       - name: List directory contents
         run: ls -R
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[dev]
+
+      - name: Validate pyproject.toml
+        run: |
+          python -m pip install toml
+          python -c "import toml; toml.load('pyproject.toml')"
+
+      - name: Run Tests
+        run: make test
