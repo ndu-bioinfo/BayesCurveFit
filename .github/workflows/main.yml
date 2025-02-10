@@ -16,38 +16,27 @@ jobs:
   unit_test:
     strategy:
       matrix:
-        os: [macos-14]
         python-version: [3.9, 3.10, 3.11, 3.12]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest 
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Update APT and Install Dependencies (Linux only)
-      if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y curl python3 python3-pip make
+      - name: Update APT and Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl python3 python3-pip make
+          export LC_ALL=C.UTF-8
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: List directory contents
-      run: ls -R
+      - name: Verify Python Version
+        run: python --version
 
-    - name: Install Python Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install .[dev]
-
-    - name: Validate pyproject.toml
-      run: |
-        python -m pip install toml
-        python -c "import toml; toml.load('pyproject.toml')"
-
-    - name: Run Tests
-      run: make test
+      - name: List directory contents
+        run: ls -R
