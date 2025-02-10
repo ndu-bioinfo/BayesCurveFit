@@ -441,6 +441,9 @@ class BayesFit:
             moves=moves,
             vectorize=True
         )
+        sampler._random = np.random.mtrand.RandomState(seed=self.seed)
+        sampler._random.set_state(np.random.get_state())
+
         sampler.run_mcmc(initial_positions, burn_in_length, progress=(verbose > 0))
 
         r_hat = np.inf
