@@ -38,7 +38,7 @@ setup(
         "scipy>=1.7.1,<1.15.0",
         "tqdm",
         "scikit-learn>=1.5.0",
-        "emcee>=3.1.6",
+        "emcee==3.1.6",
     ],
     extras_require={
         "dev": [
