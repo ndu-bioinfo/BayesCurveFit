@@ -192,7 +192,6 @@ BayesCurveFit can be easily set up for parallel execution for batch processing a
 
 ```python
 from joblib import Parallel, delayed
-from tqdm import tqdm
 import pandas as pd
 from bayescurvefit.simulation import Simulation
 from bayescurvefit.distribution import GaussianMixturePDF
@@ -215,7 +214,7 @@ def run_bayescurvefit(df_input, x_data, output_csv, params_range, param_names = 
 
     samples = df_input.index.tolist()
     results = Parallel(n_jobs=-1)(
-        delayed(process_sample)(sample) for sample in tqdm(samples)
+        delayed(process_sample)(sample) for sample in samples
     )
     dict_result = {sample: res for sample, res in results}
     df_output = pd.DataFrame(dict_result).T
@@ -245,10 +244,6 @@ params_range = [(0.01, 5), (0, 5)] #The range of fitting parameters we estimated
 param_names = ["vmax", "km"] #optional
 df_output = run_bayescurvefit(df_input = sim.df_sim_data_w_error, x_data=sim.X, output_csv="test_output.csv", params_range= params_range, param_names = param_names)
 ```
-
-    100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 3182.57it/s]
-
-
 
 ```python
 df_output
