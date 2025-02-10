@@ -394,7 +394,7 @@ class BayesFit:
         """
         self.update_nuisance = solve_nuisance
         np.random.seed(self.seed)
-        
+
         if solve_nuisance:
             assert self.data.n_nuisance > 0, "No nuisance parameters specified"
             self.lower_bounds, self.upper_bounds = np.transpose(self.data.bounds)
@@ -439,8 +439,7 @@ class BayesFit:
             mcmc_dim,
             self.log_probability_mcmc,
             moves=moves,
-            vectorize=True,
-            seed
+            vectorize=True
         )
         sampler.run_mcmc(initial_positions, burn_in_length, progress=(verbose > 0))
 
