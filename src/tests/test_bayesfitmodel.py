@@ -15,18 +15,18 @@ param_names = ["pec50", "slope", "front", "back"]
 
 # Expected output based on the result from your example
 expected_result = {
-    "fit_pec50":5.8521,
-    "fit_slope":1.1624,
-    "fit_front":1.0555,
-    "fit_back":0.3829,
-    "std_pec50":0.2039,
-    "std_slope":0.55,
-    "std_front":0.0645,
-    "std_back":0.0497,
+    "fit_pec50":5.8557,
+    "fit_slope":1.0888,
+    "fit_front":1.0634,
+    "fit_back":0.3769,
+    "std_pec50":0.185,
+    "std_slope":0.3995,
+    "std_front":0.0619,
+    "std_back":0.0506,
     "est_std":0.0896,
     "null_mean":0.7624,
-    "rmse":0.1213,
-    "pep":0.0672,
+    "rmse":0.1226,
+    "pep":0.0628,
     "convergence_warning":False,
 }
 
@@ -46,7 +46,7 @@ expected_sa_logp = np.array([0.49461677, 1.05828383, 4.0878293 , 4.1485331 , 4.4
        7.71379049])
 
 expected_ols_params = np.array([5.69050018, 1.08149381, 0.99100373, 0.36469244])
-expected_r_hat = np.array([1.04, 1.09, 1.08, 1.05])
+expected_r_hat = np.array([1.04387868, 1.04011244, 1.04622125, 1.03523167])
 expected_init_pos = np.array([5.90240896, 0.88820443, 1.10134921, 0.36772887])
 
 
@@ -83,7 +83,7 @@ class TestBayesFitModel(unittest.TestCase):
 
     def test_mcmc_rhat(self):
         r_hat = self.run.bayes_fit_pipe.data.mcmc_results.R_hat_
-        self.assertTrue(np.allclose(r_hat, expected_r_hat, atol=1e-2),
+        self.assertTrue(np.allclose(r_hat, expected_r_hat, atol=1e-4),
             "Generated r_hat values do not match expected values.")
         
     def test_bayes_fit_model(self):
@@ -91,7 +91,7 @@ class TestBayesFitModel(unittest.TestCase):
         
         for param, expected_value in expected_result.items():
             with self.subTest(param=param):
-                self.assertAlmostEqual(result[param], expected_value, delta=1e-1, 
+                self.assertAlmostEqual(result[param], expected_value, delta=1e-4, 
                     msg=f"Unexpected value for {param}. Expected {expected_value}, but got {result[param]}")
 
 if __name__ == "__main__":

@@ -52,23 +52,18 @@ After running the model, you can retrieve the results using the get_result() met
 run.get_result()
 ```
 
-
-
-
-    fit_pec50               5.85208
-    fit_slope              1.162382
-    fit_front              1.055521
-    fit_back               0.382905
-    std_pec50              0.203935
-    std_slope              0.549992
-    std_front              0.064507
-    std_back               0.049695
-    est_std                0.089587
-    null_mean              0.762365
-    rmse                   0.121321
-    pep                    0.067176
-    convergence_warning       False
-    dtype: object
+fit_pec50              5.855744
+fit_slope              1.088774
+fit_front              1.063355
+fit_back               0.376912
+std_pec50              0.184996
+std_slope              0.399462
+std_front              0.061905
+std_back               0.050635
+est_std                0.089587
+null_mean              0.762365
+rmse                   0.122646
+pep                    0.062768
 
 
 
@@ -172,6 +167,15 @@ run_mm = BayesFitModel(
 run_mm.get_result()
 ```
 
+fit_vmax               1.075649
+fit_km                 1.599924
+std_vmax               0.125697
+std_km                 0.662758
+est_std                0.085374
+null_mean               0.77585
+rmse                   0.146565
+pep                    0.097757
+convergence_warning       False
 
 ```python
 f,ax = plt.subplots()
@@ -254,155 +258,153 @@ df_output
 
 
 <div>
-<style scoped>
+  <style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
-
     .dataframe tbody tr th {
         vertical-align: top;
     }
-
     .dataframe thead th {
         text-align: right;
     }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>fit_vmax</th>
-      <th>fit_km</th>
-      <th>std_vmax</th>
-      <th>std_km</th>
-      <th>est_std</th>
-      <th>null_mean</th>
-      <th>rmse</th>
-      <th>pep</th>
-      <th>convergence_warning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>m001</th>
-      <td>1.045118</td>
-      <td>0.524566</td>
-      <td>0.062925</td>
-      <td>0.258185</td>
-      <td>0.085183</td>
-      <td>0.882292</td>
-      <td>0.088229</td>
-      <td>0.073803</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m002</th>
-      <td>1.071195</td>
-      <td>0.443714</td>
-      <td>0.045651</td>
-      <td>0.138288</td>
-      <td>0.064156</td>
-      <td>0.920486</td>
-      <td>0.065077</td>
-      <td>0.019197</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m003</th>
-      <td>0.984297</td>
-      <td>0.40824</td>
-      <td>0.025424</td>
-      <td>0.078492</td>
-      <td>0.039929</td>
-      <td>0.851498</td>
-      <td>0.039976</td>
-      <td>0.001648</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m004</th>
-      <td>1.209595</td>
-      <td>0.894308</td>
-      <td>0.124583</td>
-      <td>0.564617</td>
-      <td>0.11161</td>
-      <td>0.954443</td>
-      <td>0.121742</td>
-      <td>0.142142</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m005</th>
-      <td>1.105424</td>
-      <td>0.83214</td>
-      <td>0.079353</td>
-      <td>0.301414</td>
-      <td>0.086942</td>
-      <td>0.864965</td>
-      <td>0.088763</td>
-      <td>0.016674</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m006</th>
-      <td>1.201407</td>
-      <td>1.784976</td>
-      <td>0.181883</td>
-      <td>1.154269</td>
-      <td>0.138952</td>
-      <td>0.902685</td>
-      <td>0.257211</td>
-      <td>0.578311</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m007</th>
-      <td>1.028513</td>
-      <td>1.422141</td>
-      <td>0.261195</td>
-      <td>1.132837</td>
-      <td>0.196145</td>
-      <td>0.666048</td>
-      <td>0.322277</td>
-      <td>0.896298</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m008</th>
-      <td>1.582351</td>
-      <td>2.610932</td>
-      <td>0.262687</td>
-      <td>1.146798</td>
-      <td>0.132637</td>
-      <td>0.960053</td>
-      <td>0.166416</td>
-      <td>0.169033</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m009</th>
-      <td>1.235818</td>
-      <td>1.616752</td>
-      <td>0.090134</td>
-      <td>0.457746</td>
-      <td>0.063407</td>
-      <td>0.845249</td>
-      <td>0.064784</td>
-      <td>0.002245</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>m010</th>
-      <td>1.118741</td>
-      <td>0.434675</td>
-      <td>0.033465</td>
-      <td>0.096011</td>
-      <td>0.050537</td>
-      <td>0.962909</td>
-      <td>0.051087</td>
-      <td>0.003034</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
+  </style>
+  <table border="1" class="dataframe">
+    <thead>
+      <tr style="text-align: right;">
+        <th></th>
+        <th>fit_vmax</th>
+        <th>fit_km</th>
+        <th>std_vmax</th>
+        <th>std_km</th>
+        <th>est_std</th>
+        <th>null_mean</th>
+        <th>rmse</th>
+        <th>pep</th>
+        <th>convergence_warning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>m001</th>
+        <td>1.05</td>
+        <td>0.53</td>
+        <td>0.07</td>
+        <td>0.27</td>
+        <td>0.09</td>
+        <td>0.88</td>
+        <td>0.09</td>
+        <td>0.08</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m002</th>
+        <td>1.07</td>
+        <td>0.45</td>
+        <td>0.05</td>
+        <td>0.13</td>
+        <td>0.06</td>
+        <td>0.92</td>
+        <td>0.07</td>
+        <td>0.02</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m003</th>
+        <td>0.99</td>
+        <td>0.42</td>
+        <td>0.03</td>
+        <td>0.08</td>
+        <td>0.04</td>
+        <td>0.85</td>
+        <td>0.04</td>
+        <td>0.00</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m004</th>
+        <td>1.20</td>
+        <td>0.83</td>
+        <td>0.12</td>
+        <td>0.50</td>
+        <td>0.11</td>
+        <td>0.95</td>
+        <td>0.12</td>
+        <td>0.15</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m005</th>
+        <td>1.11</td>
+        <td>0.86</td>
+        <td>0.08</td>
+        <td>0.30</td>
+        <td>0.09</td>
+        <td>0.86</td>
+        <td>0.09</td>
+        <td>0.02</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m006</th>
+        <td>1.20</td>
+        <td>1.79</td>
+        <td>0.19</td>
+        <td>1.19</td>
+        <td>0.14</td>
+        <td>0.90</td>
+        <td>0.26</td>
+        <td>0.58</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m007</th>
+        <td>1.05</td>
+        <td>1.49</td>
+        <td>0.26</td>
+        <td>1.16</td>
+        <td>0.20</td>
+        <td>0.67</td>
+        <td>0.33</td>
+        <td>0.92</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m008</th>
+        <td>1.59</td>
+        <td>2.62</td>
+        <td>0.25</td>
+        <td>1.14</td>
+        <td>0.13</td>
+        <td>0.96</td>
+        <td>0.17</td>
+        <td>0.17</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m009</th>
+        <td>1.23</td>
+        <td>1.57</td>
+        <td>0.09</td>
+        <td>0.46</td>
+        <td>0.06</td>
+        <td>0.85</td>
+        <td>0.06</td>
+        <td>0.00</td>
+        <td>False</td>
+      </tr>
+      <tr>
+        <th>m010</th>
+        <td>1.11</td>
+        <td>0.41</td>
+        <td>0.04</td>
+        <td>0.10</td>
+        <td>0.05</td>
+        <td>0.96</td>
+        <td>0.05</td>
+        <td>0.00</td>
+        <td>False</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
