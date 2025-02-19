@@ -7,12 +7,23 @@ BayesCurveFit is a Python package designed to apply Bayesian inference for curve
 
 ## Installation Guide
 
-To install the project and its dependencies, run the following command:
+You can install `bayescurvefit` using one of the following methods:
+
+### Install from PyPI (Recommended)
+To install the latest stable release from PyPI, run:
 
 ```bash
-make install
-
+pip install bayescurvefit
 ```
+### Install from Source 
+To install the latest development version, clone the repository and install manually:
+
+```bash
+git clone https://github.com/yourusername/bayescurvefit.git  
+cd bayescurvefit  
+make install
+```
+
 
 # BayesCurveFit General workflow
 
