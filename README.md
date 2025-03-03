@@ -5,6 +5,10 @@ BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inf
 ## Overview
 BayesCurveFit is a Python package designed to apply Bayesian inference for curve fitting, especially tailored for undersampled and outlier-contaminated data. It supports advanced model fitting and uncertainty estimation for biological data, such as dose-response curves in drug discovery.
 
+## Manuscript and Datasets
+A preprint can be found at: https://www.biorxiv.org/content/10.1101/2025.02.23.639769v1 
+Data and supplementary data used in the manuscript can be found at https://zenodo.org/records/14948538
+
 ## Installation Guide
 
 You can install `bayescurvefit` using one of the following methods:
