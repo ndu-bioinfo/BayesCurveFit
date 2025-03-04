@@ -1,3 +1,10 @@
+# mkdocs-badges
+[![PyPI version](https://badge.fury.io/py/bayescurvefit.svg)](https://pypi.org/project/bayescurvefit/) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+![Python Versions](https://img.shields.io/badge/Python-3.9%20|%203.10%20|%203.11%20|%203.12-blue) 
+[![Build Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/main.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
+[![Pusg Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/publish.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
+
 # BayesCurveFit
 
 BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference

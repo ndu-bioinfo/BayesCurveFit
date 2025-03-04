@@ -1,0 +1,39 @@
+import pandas as pd
+
+df_cc_fig5 = pd.read_csv("dose_response/curvecurator_results.csv")
+
+list_drugs = df_cc_fig5["Drug"].unique().tolist()
+
+rule all:
+    input:
+        "results/all_drugs.csv"
+
+rule split_drug_data:
+    output:
+        "data/{drug}.csv"
+    run:
+        df_drug = df_cc_fig5.query("Drug == @wildcards.drug")
+        df_drug.to_csv(output[0], index=False)
+
+rule run_bayescurvefit:
+    input:
+        drug_csv="data/{drug}.csv"
+    output:
+        "results/{drug}.csv"
+    shell:
+        """
+        python run_bayes.py {input.drug_csv} {output[0]} {wildcards.drug}
+        """
+
+rule merge:
+    input:
+        expand("results/{drug}.csv", drug=list_drugs)
+    output:
+        "results/all_drugs.csv"
+    run:
+        df_list = []
+        for csv in input:
+            df = pd.read_csv(csv)
+            df_list.append(df)
+        all_drugs_df = pd.concat(df_list)
+        all_drugs_df.to_csv(output[0], index=False)
