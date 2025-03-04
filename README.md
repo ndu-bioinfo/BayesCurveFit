@@ -1,11 +1,9 @@
-# BayesCurveFit
+# BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference
 [![PyPI version](https://badge.fury.io/py/bayescurvefit.svg)](https://pypi.org/project/bayescurvefit/) 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
 ![Python Versions](https://img.shields.io/badge/Python-3.9%20|%203.10%20|%203.11%20|%203.12-blue) 
 [![Build Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/main.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
 [![Pusg Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/publish.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
-
-BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference
 
 ## Overview
 BayesCurveFit is a Python package designed to apply Bayesian inference for curve fitting, especially tailored for undersampled and outlier-contaminated data. It supports advanced model fitting and uncertainty estimation for biological data, such as dose-response curves in drug discovery.
@@ -14,6 +12,8 @@ BayesCurveFit is a Python package designed to apply Bayesian inference for curve
 A preprint can be found at: https://www.biorxiv.org/content/10.1101/2025.02.23.639769v1
 
 Data and supplementary data used in the manuscript can be found at https://zenodo.org/records/14948538
+
+The BayesCurveFit pipeline for processing Kinobeads data is available and can be found in the [examples/pipeline](https://github.com/ndu-bioinfo/BayesCurveFit/tree/main/examples/pipeline) directory of the repository.
 
 ## Installation Guide
 
