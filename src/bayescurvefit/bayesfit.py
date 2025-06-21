@@ -490,14 +490,11 @@ class BayesFit:
             )
         )
 
-        self.data.mcmc_results.best_gmms = [
-            fit_prosterior(
-                self.data.mcmc_results.get_samples(flat=True)[:, i],
-                max_components=max_components,
-                bw_method=bw_method,
-            )
-            for i in range(self.data.ndim)
-        ]
+        self.data.mcmc_results.best_gmm = fit_posterior(
+            data=self.data.mcmc_results.get_samples(flat=True).T,  # shape (n_params, n_samples)
+            max_components=max_components,
+            bw_method=bw_method,
+        )
         optima = np.array([calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms])
         self.data.OPTIMAL_PARAM_ = optima[:, 0]
         self.data.OPTIMAL_PARAM_STD_ = optima[:, 1]

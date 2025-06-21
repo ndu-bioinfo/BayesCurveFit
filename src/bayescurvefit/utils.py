@@ -206,48 +206,62 @@ def calculate_bic(log_likelihood, num_params, num_data_points):
     return num_params * np.log(num_data_points) - 2 * log_likelihood
 
 
-def fit_prosterior(data: np.ndarray, max_components: int = 10, bw_method="scott"):
+def fit_posterior(data: np.ndarray, max_components: int = 10, bw_method="scott") -> GaussianMixture:
     """
-    Fit prosterior distribution with mixture guassian.
+    Fit posterior distribution using a Gaussian Mixture Model based on KDE resampling.
 
     Args:
-        data: Data to fit.
-        n_components: Number of Gaussian components.
-        tol: Convergence threshold for EM algorithm.
+        data: 2D array of shape (n_params, n_samples) representing samples from the posterior.
+        max_components: Maximum number of GMM components to try.
+        bw_method: Bandwidth method for KDE ("scott", "silverman", or float).
 
     Returns:
-        Optimized parameters.
+        best_gmm: The best-fit GaussianMixture model selected via BIC.
     """
+    if data.ndim != 2:
+        raise ValueError("Input data must be 2D with shape (n_params, n_samples)")
+
+    # KDE fit and sample
     kde = gaussian_kde(data, bw_method=bw_method)
-    kde_samples = kde.resample(size=10000).flatten()
+    kde_samples = kde.resample(size=10000).T  # shape (10000, n_params)
+
+    # Fit GMMs
     gmms = [
-        GaussianMixture(n_components=n_component, max_iter=10000).fit(
-            kde_samples.reshape(-1, 1),
-        )
-        for n_component in range(1, max_components + 1)
+        GaussianMixture(n_components=n, covariance_type="full", max_iter=1000, random_state=0).fit(kde_samples)
+        for n in range(1, max_components + 1)
     ]
-    best_gmm = gmms[np.argmin([gmm.bic(kde_samples.reshape(-1, 1)) for gmm in gmms])]
+
+    # Select best GMM via BIC
+    bics = [gmm.bic(kde_samples) for gmm in gmms]
+    best_gmm = gmms[np.argmin(bics)]
     return best_gmm
 
 
 def calc_bma(best_gmm: GaussianMixture):
     """
-    Calculate the Bayesian Model Averaging (BMA) mean and standard deviation from a Gaussian Mixture Model (GMM).
+    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a multivariate GMM.
 
     Args:
-        best_gmm: GaussianMixture insance with the lowest bic from fit_prosterior.
+        best_gmm: GaussianMixture instance from fit_posterior.
 
     Returns:
-          - bma_mean: The weighted average of the means of the GMM components.
-          - bma_std: The standard deviation of the BMA, considering covariances and means of the GMM components.
+        bma_mean: Weighted average of means across components (shape: [n_params]).
+        bma_cov: Full BMA covariance matrix (shape: [n_params, n_params]).
     """
-    means = best_gmm.means_.flatten()
-    covariances = best_gmm.covariances_.flatten()
-    weights = best_gmm.weights_
-    bma_mean = np.sum(weights * means)
-    bma_variance = np.sum(weights * (covariances + means**2)) - bma_mean**2
-    bma_std = np.sqrt(bma_variance)
-    return [bma_mean, bma_std]
+    means = best_gmm.means_  # shape: (n_components, n_params)
+    covariances = best_gmm.covariances_  # shape: (n_components, n_params, n_params)
+    weights = best_gmm.weights_  # shape: (n_components,)
+
+    # Compute BMA mean
+    bma_mean = np.average(means, axis=0, weights=weights)
+
+    # Compute BMA covariance using law of total variance
+    bma_cov = sum(
+        w * (cov + np.outer(mean - bma_mean, mean - bma_mean))
+        for w, mean, cov in zip(weights, means, covariances)
+    )
+
+    return bma_mean, bma_cov
 
 
 def compute_pep(bic0: float, bic1: float):
