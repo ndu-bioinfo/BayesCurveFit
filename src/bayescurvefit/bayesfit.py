@@ -1,6 +1,7 @@
 import itertools
-from typing import Callable, List, Optional, Tuple, Union
 import warnings
+from typing import Callable, List, Optional, Tuple, Union
+
 import emcee
 import numpy as np
 from scipy.optimize import dual_annealing
@@ -227,9 +228,7 @@ class BayesFit:
                 )
                 fit_params = np.array([np.nan for i in range(self.data.ndim)])
         self.data.ols_results.PARAMS_ = fit_params
-        if (
-            run_correction
-        ):  # After SA, check if OLS with SA found optimal parameters as init might generate lower sum_log, if so, update the optima
+        if run_correction:  # After SA, check if OLS with SA found optimal parameters as init might generate lower sum_log, if so, update the optima
             self.data.ols_results.LogP_ = self.sum_log_likelihood(fit_params)
             if self.data.OPTIMAL_LogP_ < self.data.ols_results.LogP_:
                 self.data.OPTIMAL_LogP_ = self.data.ols_results.LogP_
@@ -439,7 +438,7 @@ class BayesFit:
             mcmc_dim,
             self.log_probability_mcmc,
             moves=moves,
-            vectorize=True
+            vectorize=True,
         )
 
         sampler.run_mcmc(initial_positions, burn_in_length, progress=(verbose > 0))
@@ -490,31 +489,43 @@ class BayesFit:
             )
         )
 
-        self.data.mcmc_results.best_gmms = [fit_posterior(
-            data=self.data.mcmc_results.get_samples(flat=True).T,  # shape (n_params, n_samples)
-            max_components=max_components,
-            bw_method=bw_method,
-        )]
-        # Calculate BMA for each GMM component
+        self.data.mcmc_results.best_gmms = [
+            fit_posterior(
+                self.data.mcmc_results.get_samples(flat=True)[:, i],
+                max_components=max_components,
+                bw_method=bw_method,
+            )
+            for i in range(self.data.ndim)
+        ]
+        # Calculate BMA for each parameter (each GMM)
         bma_results = [calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms]
-        self.data.OPTIMAL_PARAM_ = bma_results[0][0]  # bma_mean from first component
-        self.data.OPTIMAL_PARAM_STD_ = np.sqrt(np.diag(bma_results[0][1]))  # sqrt of diagonal of bma_cov
+        self.data.OPTIMAL_PARAM_ = np.array(
+            [result[0] for result in bma_results]
+        )  # Extract means
+        self.data.OPTIMAL_PARAM_STD_ = np.array(
+            [np.sqrt(np.diag(result[1])) for result in bma_results]
+        )  # Extract std devs from diagonal
 
-        # For each GMM, get all possible parameter combinations from the means
-        opt_params = []
-        for gmm in self.data.mcmc_results.best_gmms:
-            # Each row in gmm.means_ is a parameter set
-            for mean_row in gmm.means_:
-                opt_params.append(list(mean_row))
+        opt_params = list(
+            itertools.product(
+                *[gmm.means_.flatten() for gmm in self.data.mcmc_results.best_gmms]
+            )
+        )
         # Add nuisance parameters to each parameter set
         if self.data.n_nuisance > 0:
-            opt_params = [list(param) + list(self.data.NUISANCE_) for param in opt_params]
-        # Calculate weights for each parameter set
-        opt_weights = []
-        for gmm in self.data.mcmc_results.best_gmms:
-            # Each weight corresponds to a mean row
-            for weight in gmm.weights_:
-                opt_weights.append(weight)
+            opt_params = [
+                list(param) + list(self.data.NUISANCE_) for param in opt_params
+            ]
+        opt_weights = np.prod(
+            np.array(
+                list(
+                    itertools.product(
+                        *[gmm.weights_ for gmm in self.data.mcmc_results.best_gmms]
+                    )
+                )
+            ),
+            axis=1,
+        )
         weighted_probs = np.array(
             [
                 weight * np.exp(self.sum_log_likelihood(param))

@@ -2,7 +2,7 @@ import warnings
 from typing import Callable, List, Tuple
 
 import numpy as np
-from scipy.optimize import curve_fit, OptimizeWarning
+from scipy.optimize import OptimizeWarning, curve_fit
 from scipy.stats import gaussian_kde, truncnorm
 from sklearn.mixture import GaussianMixture
 
@@ -18,7 +18,7 @@ def ols_fitting(
     fit_func: Callable,
     bounds: List[Tuple[List[float], List[float]]],
     init_guess: List[float] = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Perform OLS fitting.
@@ -55,7 +55,7 @@ def ols_fitting(
             y_fit,
             p0=init_guess,
             bounds=[lower_bounds, upper_bounds],
-            **kwargs
+            **kwargs,
         )
     y_preds = fit_func(x_fit, *fit_params)
     fit_errors = np.array(y_preds - y_fit)
@@ -183,10 +183,10 @@ def calculate_effective_size(chains: np.ndarray, threshold: float = 0.0):
         1 - (variogram(chains, i) / (2 * gelman_rubin(chains, return_tot_var=True)))
         for i in np.arange(1, max_lag)[::jump]
     ]
-    T = (
+    cutoff_lag = (
         np.argmax(np.transpose(p_hats).mean(axis=0) < threshold) * jump
-    )  # Gelman suggest T should be the first odd positive integer for which p^_T+1 + p^_T+2 is negative, but here we just take the first mean of all params < threshold as an estimate
-    if T > 0:
+    )  # Gelman suggest cutoff_lag should be the first odd positive integer for which p^_cutoff_lag+1 + p^_cutoff_lag+2 is negative, but here we just take the first mean of all params < threshold as an estimate
+    if cutoff_lag > 0:
         p_hat_sum = np.sum(
             [
                 1
@@ -194,7 +194,7 @@ def calculate_effective_size(chains: np.ndarray, threshold: float = 0.0):
                     variogram(chains, t)
                     / (2 * gelman_rubin(chains, return_tot_var=True))
                 )
-                for t in range(1, T)
+                for t in range(1, cutoff_lag)
             ],
             axis=0,
         )
@@ -206,28 +206,38 @@ def calculate_bic(log_likelihood, num_params, num_data_points):
     return num_params * np.log(num_data_points) - 2 * log_likelihood
 
 
-def fit_posterior(data: np.ndarray, max_components: int = 10, bw_method="scott") -> GaussianMixture:
+def fit_posterior(
+    data: np.ndarray, max_components: int = 10, bw_method="scott"
+) -> GaussianMixture:
     """
     Fit posterior distribution using a Gaussian Mixture Model based on KDE resampling.
 
     Args:
-        data: 2D array of shape (n_params, n_samples) representing samples from the posterior.
+        data: 1D or 2D array representing samples from the posterior.
+               - If 1D: shape (n_samples,) - fits univariate distribution
+               - If 2D: shape (n_params, n_samples) - fits multivariate distribution
         max_components: Maximum number of GMM components to try.
         bw_method: Bandwidth method for KDE ("scott", "silverman", or float).
 
     Returns:
         best_gmm: The best-fit GaussianMixture model selected via BIC.
     """
-    if data.ndim != 2:
-        raise ValueError("Input data must be 2D with shape (n_params, n_samples)")
-
-    # KDE fit and sample
-    kde = gaussian_kde(data, bw_method=bw_method)
-    kde_samples = kde.resample(size=10000).T  # shape (10000, n_params)
+    if data.ndim == 1:
+        # 1D case: univariate distribution
+        kde = gaussian_kde(data, bw_method=bw_method)
+        kde_samples = kde.resample(size=10000).reshape(-1, 1)  # shape (10000, 1)
+    elif data.ndim == 2:
+        # 2D case: multivariate distribution
+        kde = gaussian_kde(data, bw_method=bw_method)
+        kde_samples = kde.resample(size=10000).T  # shape (10000, n_params)
+    else:
+        raise ValueError("Input data must be 1D or 2D")
 
     # Fit GMMs
     gmms = [
-        GaussianMixture(n_components=n, covariance_type="full", max_iter=1000, random_state=0).fit(kde_samples)
+        GaussianMixture(
+            n_components=n, covariance_type="full", max_iter=1000, random_state=0
+        ).fit(kde_samples)
         for n in range(1, max_components + 1)
     ]
 
