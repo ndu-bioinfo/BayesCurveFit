@@ -43,7 +43,7 @@ pip install bayescurvefit
 Or with uv (faster):
 
 ```bash
-uv add bayescurvefit
+uv pip install bayescurvefit
 ```
 
 ### Install from Source
