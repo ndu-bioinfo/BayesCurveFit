@@ -18,16 +18,6 @@ Data and supplementary data used in the manuscript can be found at https://zenod
 
 The BayesCurveFit pipeline for processing Kinobeads data is available and can be found in the [examples/pipeline](https://github.com/ndu-bioinfo/BayesCurveFit/tree/main/examples/pipeline) directory of the repository.
 
-## Recent Improvements
-
-### Version 0.6.0
-
-- **Enhanced Covariance Handling**: Improved Bayesian Model Averaging with proper multivariate parameter correlation analysis
-- **Modern Package Management**: Migrated to `uv` for faster, more reliable dependency management
-- **Python 3.12+ Support**: Updated to require Python 3.12+ for better performance and modern features
-- **Robust Testing**: Platform-independent tests with improved stochastic result handling
-- **Better Documentation**: Comprehensive examples and improved API documentation
-
 ### Technical Details
 
 - **Bayesian Model Averaging**: Uses Gaussian Mixture Models with proper law of total variance for covariance estimation
