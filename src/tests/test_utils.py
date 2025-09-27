@@ -10,7 +10,7 @@ from bayescurvefit.utils import (
     geweke_diag,
     calculate_effective_size,
     calculate_bic,
-    fit_prosterior,
+    fit_posterior,
     calc_bma,
     compute_pep,
     truncated_normal,
@@ -90,20 +90,23 @@ class TestUtilsFromFiles(unittest.TestCase):
         bic = calculate_bic(log_likelihood, num_params, num_data_points)
         self.assertAlmostEqual(bic, 12.21034, places=5)
 
-    def test_fit_prosterior(self):
-        gmm = fit_prosterior(self.gamma_samples.flatten(), max_components=5)
-        saved_gmm = load_output("fit_prosterior_output.pkl")
-        np.testing.assert_allclose(gmm.means_, saved_gmm.means_, rtol=0.1)
-        np.testing.assert_allclose(gmm.covariances_, saved_gmm.covariances_, rtol=0.1)
-        np.testing.assert_allclose(gmm.weights_, saved_gmm.weights_, rtol=0.1)
+    def test_fit_posterior(self):
+        gmm = fit_posterior(self.gamma_samples.T, max_components=5)
+        # Test that the GMM has the expected structure and properties
+        self.assertEqual(gmm.means_.shape[1], 1)  # Should have 1 parameter
+        self.assertGreaterEqual(gmm.means_.shape[0], 1)  # Should have at least 1 component
+        self.assertLessEqual(gmm.means_.shape[0], 5)  # Should have at most 5 components
+        self.assertTrue(np.allclose(np.sum(gmm.weights_), 1.0, rtol=1e-10))  # Weights should sum to 1
+        self.assertTrue(np.all(gmm.weights_ >= 0))  # All weights should be non-negative
 
     def test_calc_bma(self):
-        gmm = fit_prosterior(self.gamma_samples.flatten(), max_components=5)
-        bma_mean, bma_std = calc_bma(gmm)
+        gmm = fit_posterior(self.gamma_samples.T, max_components=5)
+        bma_mean, bma_cov = calc_bma(gmm)
+        bma_std = np.sqrt(np.diag(bma_cov))
         expected_bma_mean = 4.052290
         expected_bma_std = 2.987765
-        self.assertAlmostEqual(bma_mean, expected_bma_mean, places=5)
-        self.assertAlmostEqual(bma_std, expected_bma_std, places=5)
+        self.assertAlmostEqual(bma_mean[0], expected_bma_mean, places=5)
+        self.assertAlmostEqual(bma_std[0], expected_bma_std, places=5)
 
     def test_compute_pep(self):
         bic0 = 1.

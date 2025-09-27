@@ -10,7 +10,7 @@ from .data_classes import Data
 from .utils import (
     calc_bma,
     calculate_effective_size,
-    fit_prosterior,
+    fit_posterior,
     gelman_rubin,
     ols_fitting,
     show_warning,
@@ -490,30 +490,31 @@ class BayesFit:
             )
         )
 
-        self.data.mcmc_results.best_gmm = fit_posterior(
+        self.data.mcmc_results.best_gmms = [fit_posterior(
             data=self.data.mcmc_results.get_samples(flat=True).T,  # shape (n_params, n_samples)
             max_components=max_components,
             bw_method=bw_method,
-        )
-        optima = np.array([calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms])
-        self.data.OPTIMAL_PARAM_ = optima[:, 0]
-        self.data.OPTIMAL_PARAM_STD_ = optima[:, 1]
+        )]
+        # Calculate BMA for each GMM component
+        bma_results = [calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms]
+        self.data.OPTIMAL_PARAM_ = bma_results[0][0]  # bma_mean from first component
+        self.data.OPTIMAL_PARAM_STD_ = np.sqrt(np.diag(bma_results[0][1]))  # sqrt of diagonal of bma_cov
 
-        opt_params = list(
-            itertools.product(
-                *[gmm.means_.flatten() for gmm in self.data.mcmc_results.best_gmms]
-            )
-        )
-        opt_weights = np.prod(
-            np.array(
-                list(
-                    itertools.product(
-                        *[gmm.weights_ for gmm in self.data.mcmc_results.best_gmms]
-                    )
-                )
-            ),
-            axis=1,
-        )
+        # For each GMM, get all possible parameter combinations from the means
+        opt_params = []
+        for gmm in self.data.mcmc_results.best_gmms:
+            # Each row in gmm.means_ is a parameter set
+            for mean_row in gmm.means_:
+                opt_params.append(list(mean_row))
+        # Add nuisance parameters to each parameter set
+        if self.data.n_nuisance > 0:
+            opt_params = [list(param) + list(self.data.NUISANCE_) for param in opt_params]
+        # Calculate weights for each parameter set
+        opt_weights = []
+        for gmm in self.data.mcmc_results.best_gmms:
+            # Each weight corresponds to a mean row
+            for weight in gmm.weights_:
+                opt_weights.append(weight)
         weighted_probs = np.array(
             [
                 weight * np.exp(self.sum_log_likelihood(param))

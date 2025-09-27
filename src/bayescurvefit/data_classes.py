@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Tuple
 import numpy as np
 from sklearn.mixture import GaussianMixture
 
-from .utils import calculate_bic, check_none, fit_prosterior
+from .utils import calculate_bic, check_none, fit_posterior
 
 
 @dataclass
@@ -76,7 +76,7 @@ class MCMC_Results:
         )
 
     def get_posterior_dist(self, max_components: int = 5):
-        return fit_prosterior(
+        return fit_posterior(
             self.get_samples(flat=True), max_components=max_components
         )
 
