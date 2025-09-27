@@ -8,13 +8,16 @@ clean:
 	@find . -type f -name '.DS_Store' -exec rm -f {} +
 
 build: clean
-	@python -m build
+	uv build
 
 install: build
-	python -m pip install .
+	uv pip install .
 
 install-dev: build
-	python -m pip install .[dev]
+	uv pip install .[dev]
+
+sync:
+	uv sync
 
 test:
-	pytest -v -s src/tests/*
+	uv run pytest -v -s src/tests/*

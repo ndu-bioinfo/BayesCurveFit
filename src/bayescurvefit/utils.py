@@ -2,7 +2,7 @@ import warnings
 from typing import Callable, List, Tuple
 
 import numpy as np
-from scipy.optimize import curve_fit, OptimizeWarning
+from scipy.optimize import OptimizeWarning, curve_fit
 from scipy.stats import gaussian_kde, truncnorm
 from sklearn.mixture import GaussianMixture
 
@@ -18,7 +18,7 @@ def ols_fitting(
     fit_func: Callable,
     bounds: List[Tuple[List[float], List[float]]],
     init_guess: List[float] = None,
-    **kwargs
+    **kwargs,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Perform OLS fitting.
@@ -55,7 +55,7 @@ def ols_fitting(
             y_fit,
             p0=init_guess,
             bounds=[lower_bounds, upper_bounds],
-            **kwargs
+            **kwargs,
         )
     y_preds = fit_func(x_fit, *fit_params)
     fit_errors = np.array(y_preds - y_fit)
@@ -183,10 +183,10 @@ def calculate_effective_size(chains: np.ndarray, threshold: float = 0.0):
         1 - (variogram(chains, i) / (2 * gelman_rubin(chains, return_tot_var=True)))
         for i in np.arange(1, max_lag)[::jump]
     ]
-    T = (
+    cutoff_lag = (
         np.argmax(np.transpose(p_hats).mean(axis=0) < threshold) * jump
-    )  # Gelman suggest T should be the first odd positive integer for which p^_T+1 + p^_T+2 is negative, but here we just take the first mean of all params < threshold as an estimate
-    if T > 0:
+    )  # Gelman suggest cutoff_lag should be the first odd positive integer for which p^_cutoff_lag+1 + p^_cutoff_lag+2 is negative, but here we just take the first mean of all params < threshold as an estimate
+    if cutoff_lag > 0:
         p_hat_sum = np.sum(
             [
                 1
@@ -194,7 +194,7 @@ def calculate_effective_size(chains: np.ndarray, threshold: float = 0.0):
                     variogram(chains, t)
                     / (2 * gelman_rubin(chains, return_tot_var=True))
                 )
-                for t in range(1, T)
+                for t in range(1, cutoff_lag)
             ],
             axis=0,
         )
@@ -206,48 +206,72 @@ def calculate_bic(log_likelihood, num_params, num_data_points):
     return num_params * np.log(num_data_points) - 2 * log_likelihood
 
 
-def fit_prosterior(data: np.ndarray, max_components: int = 10, bw_method="scott"):
+def fit_posterior(
+    data: np.ndarray, max_components: int = 10, bw_method="scott"
+) -> GaussianMixture:
     """
-    Fit prosterior distribution with mixture guassian.
+    Fit posterior distribution using a Gaussian Mixture Model based on KDE resampling.
 
     Args:
-        data: Data to fit.
-        n_components: Number of Gaussian components.
-        tol: Convergence threshold for EM algorithm.
+        data: 1D or 2D array representing samples from the posterior.
+               - If 1D: shape (n_samples,) - fits univariate distribution
+               - If 2D: shape (n_params, n_samples) - fits multivariate distribution
+        max_components: Maximum number of GMM components to try.
+        bw_method: Bandwidth method for KDE ("scott", "silverman", or float).
 
     Returns:
-        Optimized parameters.
+        best_gmm: The best-fit GaussianMixture model selected via BIC.
     """
-    kde = gaussian_kde(data, bw_method=bw_method)
-    kde_samples = kde.resample(size=10000).flatten()
+    if data.ndim == 1:
+        # 1D case: univariate distribution
+        kde = gaussian_kde(data, bw_method=bw_method)
+        kde_samples = kde.resample(size=10000).reshape(-1, 1)  # shape (10000, 1)
+    elif data.ndim == 2:
+        # 2D case: multivariate distribution
+        kde = gaussian_kde(data, bw_method=bw_method)
+        kde_samples = kde.resample(size=10000).T  # shape (10000, n_params)
+    else:
+        raise ValueError("Input data must be 1D or 2D")
+
+    # Fit GMMs
     gmms = [
-        GaussianMixture(n_components=n_component, max_iter=10000).fit(
-            kde_samples.reshape(-1, 1),
-        )
-        for n_component in range(1, max_components + 1)
+        GaussianMixture(
+            n_components=n, covariance_type="full", max_iter=1000, random_state=0
+        ).fit(kde_samples)
+        for n in range(1, max_components + 1)
     ]
-    best_gmm = gmms[np.argmin([gmm.bic(kde_samples.reshape(-1, 1)) for gmm in gmms])]
+
+    # Select best GMM via BIC
+    bics = [gmm.bic(kde_samples) for gmm in gmms]
+    best_gmm = gmms[np.argmin(bics)]
     return best_gmm
 
 
 def calc_bma(best_gmm: GaussianMixture):
     """
-    Calculate the Bayesian Model Averaging (BMA) mean and standard deviation from a Gaussian Mixture Model (GMM).
+    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a multivariate GMM.
 
     Args:
-        best_gmm: GaussianMixture insance with the lowest bic from fit_prosterior.
+        best_gmm: GaussianMixture instance from fit_posterior.
 
     Returns:
-          - bma_mean: The weighted average of the means of the GMM components.
-          - bma_std: The standard deviation of the BMA, considering covariances and means of the GMM components.
+        bma_mean: Weighted average of means across components (shape: [n_params]).
+        bma_cov: Full BMA covariance matrix (shape: [n_params, n_params]).
     """
-    means = best_gmm.means_.flatten()
-    covariances = best_gmm.covariances_.flatten()
-    weights = best_gmm.weights_
-    bma_mean = np.sum(weights * means)
-    bma_variance = np.sum(weights * (covariances + means**2)) - bma_mean**2
-    bma_std = np.sqrt(bma_variance)
-    return [bma_mean, bma_std]
+    means = best_gmm.means_  # shape: (n_components, n_params)
+    covariances = best_gmm.covariances_  # shape: (n_components, n_params, n_params)
+    weights = best_gmm.weights_  # shape: (n_components,)
+
+    # Compute BMA mean
+    bma_mean = np.average(means, axis=0, weights=weights)
+
+    # Compute BMA covariance using law of total variance
+    bma_cov = sum(
+        w * (cov + np.outer(mean - bma_mean, mean - bma_mean))
+        for w, mean, cov in zip(weights, means, covariances)
+    )
+
+    return bma_mean, bma_cov
 
 
 def compute_pep(bic0: float, bic1: float):

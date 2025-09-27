@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - '*'
+      - "*"
   pull_request:
     branches:
       - main
@@ -16,9 +16,9 @@ jobs:
   unit_test:
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.12", "3.13"]
 
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -27,7 +27,7 @@ jobs:
       - name: Update APT and Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y curl python3 python3-pip make
+          sudo apt-get install -y curl make
           export LC_ALL=C.UTF-8
 
       - name: Set up Python
@@ -35,21 +35,25 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
       - name: Verify Python Version
         run: python --version
+
+      - name: Verify uv installation
+        run: uv --version
 
       - name: List directory contents
         run: ls -R
 
       - name: Install Python Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install .[dev]
+        run: uv sync
 
       - name: Validate pyproject.toml
-        run: |
-          python -m pip install toml
-          python -c "import toml; toml.load('pyproject.toml')"
+        run: uv run python -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"
 
       - name: Run Tests
         run: make test

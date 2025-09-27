@@ -1,62 +1,105 @@
 # BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference
-[![PyPI version](https://badge.fury.io/py/bayescurvefit.svg)](https://pypi.org/project/bayescurvefit/) 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
-![Python Versions](https://img.shields.io/badge/Python-3.9%20|%203.10%20|%203.11%20|%203.12-blue) 
-[![Build Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/main.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
-[![Pusg Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/publish.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions) 
+
+[![PyPI version](https://badge.fury.io/py/bayescurvefit.svg)](https://pypi.org/project/bayescurvefit/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Python Versions](https://img.shields.io/badge/Python-3.12%20|%203.13-blue)
+[![Build Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/main.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions)
+[![Publish Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/publish.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions)
 
 ## Overview
+
 BayesCurveFit is a Python package designed to apply Bayesian inference for curve fitting, especially tailored for undersampled and outlier-contaminated data. It supports advanced model fitting and uncertainty estimation for biological data, such as dose-response curves in drug discovery.
 
 ## Manuscript and Datasets
+
 A preprint can be found at: https://www.biorxiv.org/content/10.1101/2025.02.23.639769v1
 
 Data and supplementary data used in the manuscript can be found at https://zenodo.org/records/14948538
 
 The BayesCurveFit pipeline for processing Kinobeads data is available and can be found in the [examples/pipeline](https://github.com/ndu-bioinfo/BayesCurveFit/tree/main/examples/pipeline) directory of the repository.
 
+## Recent Improvements
+
+### Version 0.6.0
+
+- **Enhanced Covariance Handling**: Improved Bayesian Model Averaging with proper multivariate parameter correlation analysis
+- **Modern Package Management**: Migrated to `uv` for faster, more reliable dependency management
+- **Python 3.12+ Support**: Updated to require Python 3.12+ for better performance and modern features
+- **Robust Testing**: Platform-independent tests with improved stochastic result handling
+- **Better Documentation**: Comprehensive examples and improved API documentation
+
+### Technical Details
+
+- **Bayesian Model Averaging**: Uses Gaussian Mixture Models with proper law of total variance for covariance estimation
+- **MCMC Sampling**: Emcee-based sampling with convergence diagnostics (R-hat, effective sample size)
+- **Parameter Uncertainty**: Full covariance matrix estimation with proper correlation handling
+- **Model Comparison**: Posterior Error Probability (PEP) for model selection
+
 ## Installation Guide
 
-You can install `bayescurvefit` using one of the following methods:
+### Prerequisites
+
+- Python 3.12 or higher
+- [uv](https://docs.astral.sh/uv/) package manager (recommended)
 
 ### Install from PyPI (Recommended)
-To install the latest stable release from PyPI, run:
+
+To install the latest stable release from PyPI:
 
 ```bash
 pip install bayescurvefit
 ```
-### Install from Source 
-To install the latest development version, clone the repository and install manually:
+
+Or with uv (faster):
 
 ```bash
-git clone https://github.com/yourusername/bayescurvefit.git  
-cd bayescurvefit  
-make install
+uv add bayescurvefit
 ```
 
+### Install from Source
 
-# BayesCurveFit General workflow
+To install the latest development version:
 
-### Define the Curve Fitting Function and Input Data
-In this example, we use the log-logistic 4-parameter model.
+```bash
+git clone https://github.com/ndu-bioinfo/BayesCurveFit.git
+cd BayesCurveFit
+uv sync
+```
+
+### Development Setup
+
+For development with all dependencies:
+
+```bash
+git clone https://github.com/ndu-bioinfo/BayesCurveFit.git
+cd BayesCurveFit
+uv sync --dev
+make test  # Run tests
+```
+
+## Quick Start
+
+### Basic Usage
+
+In this example, we use the log-logistic 4-parameter model to fit dose-response data.
 
 ```python
 import numpy as np
 from bayescurvefit.execution import BayesFitModel
 
-# User define equation and data input
-
+# Define the curve fitting function
 def log_logistic_4p(x: np.ndarray, pec50: float, slope: float, front: float, back: float) -> np.ndarray:
     with np.errstate(over="ignore", under="ignore", invalid="ignore"):
         y = (front - back) / (1 + 10 ** (slope * (x + pec50))) + back
         return y
 
+# Input data
 x_data = np.array([-9.0, -8.3, -7.6, -6.9, -6.1, -5.4, -4.7, -4.0])
 y_data = np.array([1.12, 0.74, 1.03, 1.08, 0.76, 0.61, 0.39, 0.38])
-params_range = [(5, 8), (0.01, 10), (0.28, 1.22), (0.28, 1.22)] # This range represents your best estimation of where the parameters likely fall
+params_range = [(5, 8), (0.01, 10), (0.28, 1.22), (0.28, 1.22)]  # Parameter bounds
 param_names = ["pec50", "slope", "front", "back"]
 
-# Executing Bayesian workflow
+# Run Bayesian curve fitting
 run = BayesFitModel(
     x_data=x_data,
     y_data=y_data,
@@ -65,85 +108,83 @@ run = BayesFitModel(
     param_names=param_names,
 )
 ```
-### Retrieve the Fitting Results
-After running the model, you can retrieve the results using the get_result() method:
+
+### Retrieve Results
+
+Get the fitting results with parameter estimates and uncertainties:
 
 ```python
-# Retrive results
-run.get_result()
+# Get results
+results = run.get_result()
+print(results)
 ```
 
-```bash
-fit_pec50             5.855744  
-fit_slope             1.088774  
-fit_front             1.063355  
-fit_back              0.376912  
-std_pec50             0.184996  
-std_slope             0.399462  
-std_front             0.061905  
-std_back              0.050635  
-est_std               0.089587  
-null_mean             0.762365  
-rmse                  0.122646  
-pep                   0.062768  
+**Output:**
+
+```
+fit_pec50             5.855744
+fit_slope             1.088774
+fit_front             1.063355
+fit_back              0.376912
+std_pec50             0.184996
+std_slope             0.399462
+std_front             0.061905
+std_back              0.050635
+est_std               0.089587
+null_mean             0.762365
+rmse                  0.122646
+pep                   0.062768
 convergence_warning   False
 ```
 
+**Key Results:**
 
-### Visualize the Fitting Results
-You can visualize the fitted curve with the following code:
+- `fit_*`: Best-fit parameter estimates
+- `std_*`: Parameter uncertainties (standard deviations)
+- `rmse`: Root mean square error
+- `pep`: Posterior Error Probability (model comparison)
+- `convergence_warning`: MCMC convergence status
+
+### Visualization
+
+Plot the fitted curve and parameter distributions:
+
 ```python
-# Visualizing fitting results for individual runs
 import matplotlib.pyplot as plt
-f,ax = plt.subplots()
+
+# Plot fitted curve
+fig, ax = plt.subplots()
 run.analysis.plot_fitted_curve(ax=ax)
 ax.set_xlabel("Concentration [M]")
 ax.set_ylabel("Relative Site Response")
+plt.show()
 ```
-
-
-
 
     Text(0, 0.5, 'Relative Site Response')
 
-
-
-
-    
 ![png](public/demo_1_0.png)
-    
 
-### Perform Sampling Diagnoses
-You can also visualize pairwise comparisons for your fitted parameters with the following:
+### Parameter Analysis
+
+Visualize parameter correlations and sampling diagnostics:
 
 ```python
-# SA and MCMC sampling diagnoses 
+# Parameter pairwise comparisons
 run.analysis.plot_pairwise_comparison(figsize=(10, 10))
-```
 
-
-    
-![png](public/demo_1_1.png)
-    
-
-### Visualize the Error Distribution of Fitted Parameters
-To view the distribution of the fitted parameters, use the following:
-
-```python
-# Error distribution of fitted parameters
+# Parameter distributions
 run.analysis.plot_param_dist()
 ```
 
+![png](public/demo_1_1.png)
 
-    
 ![png](public/demo_1_2.png)
-    
 
+## Advanced Usage
 
-# Other Dose-Response Equations
-You can use BayesCurveFit for other common dose-response equations, such as the Michaelis-Menten model. Below is an example using the Michaelis-Menten equation:
+### Other Curve Types
 
-
+BayesCurveFit supports various curve types. Here's an example with the Michaelis-Menten model:
 
 ```python
 def michaelis_menten_func(x, vamx, km):
@@ -185,20 +226,20 @@ run_mm = BayesFitModel(
 )
 ```
 
-
 ```python
 run_mm.get_result()
 ```
+
 ```bash
-fit_vmax               1.075649  
-fit_km                 1.599924  
-std_vmax               0.125697  
-std_km                 0.662758  
-est_std                0.085374  
-null_mean              0.77585  
-rmse                   0.146565  
-pep                    0.097757  
-convergence_warning    False  
+fit_vmax               1.075649
+fit_km                 1.599924
+std_vmax               0.125697
+std_km                 0.662758
+est_std                0.085374
+null_mean              0.77585
+rmse                   0.146565
+pep                    0.097757
+convergence_warning    False
 ```
 
 ```python
@@ -208,11 +249,12 @@ ax.set_xlabel("Substrate Concentration [S] (M)")
 ax.set_ylabel("Relative Response (V/V_max)")
 
 ```
+
 ![png](public/demo_2_0.png)
 
-# Examples on how to run parallel execution 
-BayesCurveFit can be easily set up for parallel execution for batch processing and pipeline integration. Here, we provide an example of how to enable parallel execution to speed up the fitting process.
+### Parallel Processing
 
+BayesCurveFit supports parallel execution for batch processing and pipeline integration:
 
 ```python
 from joblib import Parallel, delayed
@@ -220,7 +262,6 @@ import pandas as pd
 from bayescurvefit.simulation import Simulation
 from bayescurvefit.distribution import GaussianMixturePDF
 ```
-
 
 ```python
 def run_bayescurvefit(df_input, x_data, output_csv, params_range, param_names = None):
@@ -246,7 +287,6 @@ def run_bayescurvefit(df_input, x_data, output_csv, params_range, param_names = 
     return df_output
 ```
 
-
 ```python
 # Generate simulation dataset
 sample_size = 6 # Number of observations
@@ -262,7 +302,6 @@ sim = Simulation(fit_function=michaelis_menten_func,
                 n_replicates=1)
 ```
 
-
 ```python
 params_range = [(0.01, 5), (0, 5)] #The range of fitting parameters we estimated
 param_names = ["vmax", "km"] #optional
@@ -272,9 +311,6 @@ df_output = run_bayescurvefit(df_input = sim.df_sim_data_w_error, x_data=sim.X, 
 ```python
 df_output
 ```
-
-
-
 
 <div>
   <table border="1" class="dataframe">
@@ -416,3 +452,56 @@ df_output
     </tbody>
   </table>
 </div>
+
+## Development
+
+### Running Tests
+
+```bash
+# Install development dependencies
+uv sync --dev
+
+# Run all tests
+make test
+
+# Run specific test file
+uv run pytest src/tests/test_utils.py -v
+```
+
+### Building the Package
+
+```bash
+# Build package
+make build
+
+# Install locally
+make install
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Run tests: `make test`
+5. Commit your changes: `git commit -m "Add feature"`
+6. Push to the branch: `git push origin feature-name`
+7. Submit a pull request
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## Citation
+
+If you use BayesCurveFit in your research, please cite:
+
+```bibtex
+@article{du2025bayescurvefit,
+  title={BayesCurveFit: Enhancing Curve Fitting in Drug Discovery Data Using Bayesian Inference},
+  author={Du, Niu and others},
+  journal={bioRxiv},
+  year={2025},
+  doi={10.1101/2025.02.23.639769}
+}
+```
