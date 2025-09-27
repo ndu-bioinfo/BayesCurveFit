@@ -167,8 +167,11 @@ class BayesFitModel:
 
         if self.run_mcmc:
             output_values = (
-                list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_.flatten())
-                + list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_STD_.flatten())
+                [float(x) for x in self.bayes_fit_pipe.data.OPTIMAL_PARAM_.flatten()]
+                + [
+                    float(x)
+                    for x in self.bayes_fit_pipe.data.OPTIMAL_PARAM_STD_.flatten()
+                ]
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
                 + [
                     null_mean,
@@ -185,7 +188,7 @@ class BayesFitModel:
             )
         else:
             output_values = (
-                list(self.bayes_fit_pipe.data.OPTIMAL_PARAM_.flatten())
+                [float(x) for x in self.bayes_fit_pipe.data.OPTIMAL_PARAM_.flatten()]
                 + list(self.bayes_fit_pipe.data.NUISANCE_)
                 + [null_mean, rmse, pep]
             )
