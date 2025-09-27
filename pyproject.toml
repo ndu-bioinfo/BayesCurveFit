@@ -37,6 +37,8 @@ dev = [
     "mypy",
     "pre-commit",
     "autoflake",
+    "build",
+    "twine",
 ]
 
 [tool.hatch.build.targets.wheel]
