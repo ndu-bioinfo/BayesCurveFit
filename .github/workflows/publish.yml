@@ -23,7 +23,7 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --dev
 
       - name: Build package
         run: uv build

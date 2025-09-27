@@ -106,4 +106,5 @@ strict_equality = true
 [dependency-groups]
 dev = [
     "pytest>=8.4.2",
+    "twine>=6.2.0",
 ]
