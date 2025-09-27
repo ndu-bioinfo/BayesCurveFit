@@ -1,19 +1,21 @@
 import os
-import unittest
-import numpy as np
 import pickle
+import unittest
+
+import numpy as np
+
 from bayescurvefit.utils import (
+    calc_bma,
+    calculate_bic,
+    calculate_effective_size,
+    compute_pep,
+    fit_posterior,
+    gelman_rubin,
+    geweke_diag,
     ols_fitting,
     split_chains,
-    gelman_rubin,
-    variogram,
-    geweke_diag,
-    calculate_effective_size,
-    calculate_bic,
-    fit_posterior,
-    calc_bma,
-    compute_pep,
     truncated_normal,
+    variogram,
 )
 
 
@@ -22,6 +24,7 @@ def load_output(filename):
     file_path = os.path.join(base_dir, "files/utils", filename)
     with open(file_path, "rb") as f:
         return pickle.load(f)
+
 
 class TestUtilsFromFiles(unittest.TestCase):
     def setUp(self):
@@ -36,7 +39,9 @@ class TestUtilsFromFiles(unittest.TestCase):
             return a * np.sin(x) + b
 
         bounds = [(0, 10), (0, 10)]
-        params, y_preds, errors = ols_fitting(self.x_data, self.y_data, fit_func, bounds)
+        params, y_preds, errors = ols_fitting(
+            self.x_data, self.y_data, fit_func, bounds
+        )
         saved_output = load_output("ols_fitting_output.pkl")
         saved_params, saved_y_preds, saved_errors = (
             saved_output["params"],
@@ -63,18 +68,20 @@ class TestUtilsFromFiles(unittest.TestCase):
         np.testing.assert_allclose(variogram_result, expected_variogram, rtol=0.1)
 
     def test_geweke_diag(self):
-        expected_geweke_scores = np.array([
-            [-0.27642318, -1.56015775],
-            [1.57414811, 0.45452033],
-            [-5.85555905, -16.41391957],
-            [-2.29344027, 4.84707257],
-            [9.38815234, 16.44230356],
-            [-2.77470165, -7.50552885],
-            [5.92067096, 6.81474101],
-            [3.03861873, 5.96154778],
-            [2.96977574, 2.8423133],
-            [-8.48320535, 2.98517782]
-        ])
+        expected_geweke_scores = np.array(
+            [
+                [-0.27642318, -1.56015775],
+                [1.57414811, 0.45452033],
+                [-5.85555905, -16.41391957],
+                [-2.29344027, 4.84707257],
+                [9.38815234, 16.44230356],
+                [-2.77470165, -7.50552885],
+                [5.92067096, 6.81474101],
+                [3.03861873, 5.96154778],
+                [2.96977574, 2.8423133],
+                [-8.48320535, 2.98517782],
+            ]
+        )
         geweke_scores = geweke_diag(self.mcmc_chain)
         np.testing.assert_allclose(geweke_scores, expected_geweke_scores, rtol=0.1)
 
@@ -94,22 +101,27 @@ class TestUtilsFromFiles(unittest.TestCase):
         gmm = fit_posterior(self.gamma_samples.T, max_components=5)
         # Test that the GMM has the expected structure and properties
         self.assertEqual(gmm.means_.shape[1], 1)  # Should have 1 parameter
-        self.assertGreaterEqual(gmm.means_.shape[0], 1)  # Should have at least 1 component
+        self.assertGreaterEqual(
+            gmm.means_.shape[0], 1
+        )  # Should have at least 1 component
         self.assertLessEqual(gmm.means_.shape[0], 5)  # Should have at most 5 components
-        self.assertTrue(np.allclose(np.sum(gmm.weights_), 1.0, rtol=1e-10))  # Weights should sum to 1
+        self.assertTrue(
+            np.allclose(np.sum(gmm.weights_), 1.0, rtol=1e-10)
+        )  # Weights should sum to 1
         self.assertTrue(np.all(gmm.weights_ >= 0))  # All weights should be non-negative
 
     def test_calc_bma(self):
         gmm = fit_posterior(self.gamma_samples.T, max_components=5)
-        bma_mean, bma_cov = calc_bma(gmm)
-        bma_std = np.sqrt(np.diag(bma_cov))
+        bma_result = calc_bma(gmm)
+        bma_mean = bma_result[0]
+        bma_std = bma_result[1]
         expected_bma_mean = 4.052290
         expected_bma_std = 2.987765
         self.assertAlmostEqual(bma_mean[0], expected_bma_mean, places=5)
         self.assertAlmostEqual(bma_std[0], expected_bma_std, places=5)
 
     def test_compute_pep(self):
-        bic0 = 1.
+        bic0 = 1.0
         bic1 = 1.5
         pep = compute_pep(bic0, bic1)
         self.assertAlmostEqual(pep, 0.562176, places=5)

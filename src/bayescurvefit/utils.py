@@ -249,14 +249,13 @@ def fit_posterior(
 
 def calc_bma(best_gmm: GaussianMixture):
     """
-    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a multivariate GMM.
+    Calculate the Bayesian Model Averaging (BMA) mean and standard deviation from a GMM.
 
     Args:
         best_gmm: GaussianMixture instance from fit_posterior.
 
     Returns:
-        bma_mean: Weighted average of means across components (shape: [n_params]).
-        bma_cov: Full BMA covariance matrix (shape: [n_params, n_params]).
+        [bma_mean, bma_std]: List containing mean and standard deviation.
     """
     means = best_gmm.means_  # shape: (n_components, n_params)
     covariances = best_gmm.covariances_  # shape: (n_components, n_params, n_params)
@@ -265,13 +264,16 @@ def calc_bma(best_gmm: GaussianMixture):
     # Compute BMA mean
     bma_mean = np.average(means, axis=0, weights=weights)
 
-    # Compute BMA covariance using law of total variance
+    # Compute BMA covariance using law of total variance (improved calculation)
     bma_cov = sum(
         w * (cov + np.outer(mean - bma_mean, mean - bma_mean))
         for w, mean, cov in zip(weights, means, covariances)
     )
 
-    return bma_mean, bma_cov
+    # Extract standard deviations from diagonal of covariance matrix
+    bma_std = np.sqrt(np.diag(bma_cov))
+
+    return [bma_mean, bma_std]
 
 
 def compute_pep(bic0: float, bic1: float):

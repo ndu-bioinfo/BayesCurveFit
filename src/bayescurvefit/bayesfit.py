@@ -489,6 +489,7 @@ class BayesFit:
             )
         )
 
+        # Fit univariate GMMs for each parameter (for single best estimates)
         self.data.mcmc_results.best_gmms = [
             fit_posterior(
                 self.data.mcmc_results.get_samples(flat=True)[:, i],
@@ -497,14 +498,11 @@ class BayesFit:
             )
             for i in range(self.data.ndim)
         ]
-        # Calculate BMA for each parameter (each GMM)
-        bma_results = [calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms]
-        self.data.OPTIMAL_PARAM_ = np.array(
-            [result[0] for result in bma_results]
-        )  # Extract means
-        self.data.OPTIMAL_PARAM_STD_ = np.array(
-            [np.sqrt(np.diag(result[1])) for result in bma_results]
-        )  # Extract std devs from diagonal
+
+        # Calculate single best estimates using univariate BMA
+        optima = np.array([calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms])
+        self.data.OPTIMAL_PARAM_ = optima[:, 0]  # Single best estimate per parameter
+        self.data.OPTIMAL_PARAM_STD_ = optima[:, 1]  # Standard deviations
 
         opt_params = list(
             itertools.product(
