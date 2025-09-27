@@ -13,10 +13,12 @@ authors = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26,<2.0.0",
     "pandas>=2.0",
@@ -54,16 +56,6 @@ include = [
     "/pyproject.toml",
 ]
 
-[tool.uv]
-dev-dependencies = [
-    "pytest",
-    "flake8>=3.9.2",
-    "black>=22.3.0",
-    "isort>=5.10.1",
-    "mypy",
-    "pre-commit",
-    "autoflake",
-]
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]
@@ -110,3 +102,8 @@ warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
 strict_equality = true
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
