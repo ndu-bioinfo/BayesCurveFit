@@ -8,7 +8,7 @@ from scipy.stats import laplace, norm
 class SimplePDF:
     def __init__(self, fixed_pdf_params: List[float] = [5.0, 0.1]) -> None:
         """
-        The GaussianLaplacePDF has fixed  mu, b, mix_frac, useful in conditional prosterior estimation.
+        The GaussianLaplacePDF has fixed  mu, b, mix_frac, useful in conditional posterior estimation.
         fixed_pdf_params: Fix parameters for the mixture PDF [mu, b, mix_frac].
                 b: Scale parameter of the Laplace distribution.
                 mix_frac: Fraction of the Laplace distribution.
