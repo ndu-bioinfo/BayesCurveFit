@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bayescurvefit"
-version = "0.6.0"
+version = "0.0.0"
 description = "BayesCurveFit: Enhancing Biological Data Analysis with Robust Curve Fitting and FDR Detection"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -13,12 +13,14 @@ authors = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.26,<2.0.0",
     "pandas>=2.0",
@@ -42,6 +44,9 @@ dev = [
     "build",
     "twine",
 ]
+
+[tool.hatch.version]
+source = "scm"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/bayescurvefit"]
