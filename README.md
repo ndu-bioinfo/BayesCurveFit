@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/bayescurvefit.svg)](https://pypi.org/project/bayescurvefit/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Python Versions](https://img.shields.io/badge/Python-3.12%20|%203.13-blue)
+![Python Versions](https://img.shields.io/badge/Python-3.11%20|%203.12%20|%203.13-blue)
 [![Build Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/main.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions)
 [![Publish Status](https://github.com/ndu-bioinfo/BayesCurveFit/actions/workflows/publish.yml/badge.svg)](https://github.com/ndu-bioinfo/BayesCurveFit/actions)
 
@@ -29,7 +29,7 @@ The BayesCurveFit pipeline for processing Kinobeads data is available and can be
 
 ### Prerequisites
 
-- Python 3.12 or higher
+- Python 3.11 or higher
 - [uv](https://docs.astral.sh/uv/) package manager (recommended)
 
 ### Install from PyPI (Recommended)
@@ -466,6 +466,27 @@ make build
 
 # Install locally
 make install
+```
+
+### Version Management
+
+**Single source of truth: `src/bayescurvefit/__init__.py`**
+
+**To release a new version:**
+
+1. **Run the script**: `python scripts/bump_version.py patch` (or `minor`/`major`)
+   - Updates `__init__.py`
+   - Commits the change
+   - Creates and pushes git tag (e.g., `v0.6.2`)
+2. **Create GitHub release**: Go to [GitHub Releases](https://github.com/ndu-bioinfo/BayesCurveFit/releases), create release with the existing tag
+3. **Done!** GitHub Actions automatically publishes to PyPI
+
+**Available commands:**
+
+```bash
+python scripts/bump_version.py patch   # 0.6.1 → 0.6.2
+python scripts/bump_version.py minor   # 0.6.1 → 0.7.0
+python scripts/bump_version.py major   # 0.6.1 → 1.0.0
 ```
 
 ### Contributing

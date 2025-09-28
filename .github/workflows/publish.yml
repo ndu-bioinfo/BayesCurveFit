@@ -2,7 +2,7 @@ name: Publish Python Package
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   deploy:
@@ -21,6 +21,11 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "latest"
+
+      - name: Extract version from __init__.py and update pyproject.toml
+        run: |
+          VERSION=$(grep '__version__ = ' src/bayescurvefit/__init__.py | sed 's/.*"\(.*\)".*/\1/')
+          sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
 
       - name: Install dependencies
         run: uv sync --dev
