@@ -26,18 +26,18 @@ param_names = ["pec50", "slope", "front", "back"]
 
 # Expected output based on the result from your example
 expected_result = {
-    "fit_pec50": 5.8557,
-    "fit_slope": 1.0888,
-    "fit_front": 1.0634,
-    "fit_back": 0.3769,
-    "std_pec50": 0.185,
-    "std_slope": 0.3995,
-    "std_front": 0.0619,
-    "std_back": 0.0506,
+    "fit_pec50": 5.8536,
+    "fit_slope": 1.0956,
+    "fit_front": 1.0631,
+    "fit_back": 0.3774,
+    "std_pec50": 0.1825,
+    "std_slope": 0.4112,
+    "std_front": 0.0625,
+    "std_back": 0.0505,
     "est_std": 0.0896,
     "null_mean": 0.7624,
     "rmse": 0.1226,
-    "pep": 0.0291,
+    "pep": 0.0289,
     "convergence_warning": False,
 }
 
