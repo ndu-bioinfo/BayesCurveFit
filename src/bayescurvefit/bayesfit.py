@@ -1,4 +1,3 @@
-import itertools
 import warnings
 from typing import Callable, List, Optional, Tuple, Union
 
@@ -489,43 +488,30 @@ class BayesFit:
             )
         )
 
-        self.data.mcmc_results.best_gmms = [
-            fit_posterior(
-                self.data.mcmc_results.get_samples(flat=True)[:, i],
-                max_components=max_components,
-                bw_method=bw_method,
-            )
-            for i in range(self.data.ndim)
-        ]
-        # Calculate BMA for each parameter (each GMM)
-        bma_results = [calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms]
-        self.data.OPTIMAL_PARAM_ = np.array(
-            [result[0].item() for result in bma_results]
-        )
-        self.data.OPTIMAL_PARAM_STD_ = np.array(
-            [np.sqrt(np.diag(result[1])).item() for result in bma_results]
+        # Fit multivariate GMM to all parameters jointly
+        multivariate_gmm = fit_posterior(
+            self.data.mcmc_results.get_samples(
+                flat=True
+            ).T,  # Shape: (n_params, n_samples)
+            max_components=max_components,
+            bw_method=bw_method,
         )
 
-        opt_params = list(
-            itertools.product(
-                *[gmm.means_.flatten() for gmm in self.data.mcmc_results.best_gmms]
-            )
-        )
+        # Calculate BMA for the multivariate GMM
+        bma_mean, bma_cov = calc_bma(multivariate_gmm)
+
+        # Extract individual parameter means and standard deviations
+        self.data.OPTIMAL_PARAM_ = bma_mean  # Shape: (n_params,)
+        self.data.OPTIMAL_PARAM_STD_ = np.sqrt(np.diag(bma_cov))  # Shape: (n_params,)
+
+        # Generate parameter combinations from multivariate GMM
+        opt_params = list(multivariate_gmm.means_)  # Shape: (n_components, n_params)
         # Add nuisance parameters to each parameter set
         if self.data.n_nuisance > 0:
             opt_params = [
                 list(param) + list(self.data.NUISANCE_) for param in opt_params
             ]
-        opt_weights = np.prod(
-            np.array(
-                list(
-                    itertools.product(
-                        *[gmm.weights_ for gmm in self.data.mcmc_results.best_gmms]
-                    )
-                )
-            ),
-            axis=1,
-        )
+        opt_weights = multivariate_gmm.weights_  # Shape: (n_components,)
         weighted_probs = np.array(
             [
                 weight * np.exp(self.sum_log_likelihood(param))
