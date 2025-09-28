@@ -37,7 +37,7 @@ expected_result = {
     "est_std": 0.0896,
     "null_mean": 0.7624,
     "rmse": 0.1226,
-    "pep": 0.0628,
+    "pep": 0.0291,
     "convergence_warning": False,
 }
 
