@@ -382,10 +382,10 @@ class BayesFit:
             moves: emcee moves function, see https://emcee.readthedocs.io/en/stable/user/sampler/.
             expected_local_sigma: Expected sigma when searching a local peak.
             maximal_rhat: Maximum allowable Gelman Rubin test R_hat value for convergence.
-            minimal_sample_sizes: Minimum effective sample size required for convergence. According to Bayesian Data Analysis 3rd edition, 100 draws are enough for reasonable prosterior summaries. Nontheless, more draws can provide better accuracy as needed.
+            minimal_sample_sizes: Minimum effective sample size required for convergence. According to Bayesian Data Analysis 3rd edition, 100 draws are enough for reasonable posterior summaries. Nontheless, more draws can provide better accuracy as needed.
             converge_attempts: Maximum number of attempts to convergence.
             solve_nuisance: If True, solves for nuisance parameters.
-            max_components: Maximal number of components allowed for fitting prosterior distribution.
+            max_components: Maximal number of components allowed for fitting posterior distribution.
             verbose: 0 for no message, 1 for critical info and 2 for al info.
 
         Raises:
@@ -500,11 +500,11 @@ class BayesFit:
         # Calculate BMA for each parameter (each GMM)
         bma_results = [calc_bma(gmm) for gmm in self.data.mcmc_results.best_gmms]
         self.data.OPTIMAL_PARAM_ = np.array(
-            [result[0] for result in bma_results]
-        )  # Extract means
+            [result[0].item() for result in bma_results]
+        )
         self.data.OPTIMAL_PARAM_STD_ = np.array(
-            [np.sqrt(np.diag(result[1])) for result in bma_results]
-        )  # Extract std devs from diagonal
+            [np.sqrt(np.diag(result[1])).item() for result in bma_results]
+        )
 
         opt_params = list(
             itertools.product(

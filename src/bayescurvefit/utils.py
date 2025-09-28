@@ -249,14 +249,14 @@ def fit_posterior(
 
 def calc_bma(best_gmm: GaussianMixture):
     """
-    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a multivariate GMM.
+    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a GMM.
 
     Args:
         best_gmm: GaussianMixture instance from fit_posterior.
 
     Returns:
-        bma_mean: Weighted average of means across components (shape: [n_params]).
-        bma_cov: Full BMA covariance matrix (shape: [n_params, n_params]).
+        bma_mean: Weighted average of means across components.
+        bma_cov: BMA covariance matrix.
     """
     means = best_gmm.means_  # shape: (n_components, n_params)
     covariances = best_gmm.covariances_  # shape: (n_components, n_params, n_params)
@@ -276,7 +276,7 @@ def calc_bma(best_gmm: GaussianMixture):
 
 def compute_pep(bic0: float, bic1: float):
     """
-    Compute prosterior error probability
+    Compute posterior error probability
 
     Args:
         bic0: BIC of null model
