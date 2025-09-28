@@ -474,15 +474,20 @@ make install
 
 **To release a new version:**
 
-1. **Bump version**: `python scripts/bump_version.py patch` (or `minor`/`major`)
-2. **Commit and push**:
-   ```bash
-   git add src/bayescurvefit/__init__.py
-   git commit -m "Bump version to 0.6.2"
-   git push
-   ```
-3. **Create GitHub release**: Go to [GitHub Releases](https://github.com/ndu-bioinfo/BayesCurveFit/releases), create release with tag `v0.6.2`
-4. **Done!** GitHub Actions automatically publishes to PyPI
+1. **Run the script**: `python scripts/bump_version.py patch` (or `minor`/`major`)
+   - Updates `__init__.py`
+   - Commits the change
+   - Creates and pushes git tag (e.g., `v0.6.2`)
+2. **Create GitHub release**: Go to [GitHub Releases](https://github.com/ndu-bioinfo/BayesCurveFit/releases), create release with the existing tag
+3. **Done!** GitHub Actions automatically publishes to PyPI
+
+**Available commands:**
+
+```bash
+python scripts/bump_version.py patch   # 0.6.1 → 0.6.2
+python scripts/bump_version.py minor   # 0.6.1 → 0.7.0
+python scripts/bump_version.py major   # 0.6.1 → 1.0.0
+```
 
 ### Contributing
 
