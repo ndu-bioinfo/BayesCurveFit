@@ -1,5 +1,5 @@
 import warnings
-from typing import Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
 
 import emcee
 import numpy as np
@@ -62,8 +62,8 @@ class BayesFit:
         y_data: np.ndarray,
         fit_func: Callable,
         pdf_function: Callable,
-        bounds: List[Tuple[float, float]],
-        param_names: Optional[List[str]] = None,
+        bounds: list[tuple[float, float]],
+        param_names: list[str] | None = None,
         n_nuisance: int = 0,
         seed: int = 42,
     ):
@@ -82,10 +82,10 @@ class BayesFit:
         self.fit_func = fit_func
         self.pdf_function = pdf_function
         if param_names is None:
-            param_names = [f"param_{x+1}" for x in range(len(bounds))]
-        assert len(param_names) == len(
-            bounds
-        ), "Ensure param_names have same number of elements as bounds"
+            param_names = [f"param_{x + 1}" for x in range(len(bounds))]
+        assert len(param_names) == len(bounds), (
+            "Ensure param_names have same number of elements as bounds"
+        )
         self.seed = seed
         self.load_data(x_data, y_data, bounds, param_names, n_nuisance, fit_func)
 
@@ -113,9 +113,9 @@ class BayesFit:
         ):
             errors = self.error_function(params[: self.data.ndim])
             if self.data.n_nuisance > 0 and not self.update_nuisance:
-                assert (
-                    self.data.NUISANCE_ is not None
-                ), "To use nuisance parameters you need to first finish appoximation!"
+                assert self.data.NUISANCE_ is not None, (
+                    "To use nuisance parameters you need to first finish appoximation!"
+                )
                 return np.log(
                     self.pdf_function(pdf_params=self.data.NUISANCE_, data=errors)
                 )
@@ -279,7 +279,7 @@ class BayesFit:
         ensemble_size: int = None,
         maxiter: int = 5000,
         delta_threshold: float = 1e-3,
-        minimizer_kwargs: Optional[dict] = None,
+        minimizer_kwargs: dict | None = None,
         solve_nuisance: bool = True,
         verbose: int = 0,
     ) -> None:
@@ -304,9 +304,9 @@ class BayesFit:
             sa_dim = len(self.data.bounds)
         else:
             if self.data.n_nuisance > 0:
-                assert (
-                    self.data.NUISANCE_ is not None
-                ), "Nuisance parameters specified but not solved "
+                assert self.data.NUISANCE_ is not None, (
+                    "Nuisance parameters specified but not solved "
+                )
             self.lower_bounds, self.upper_bounds = np.transpose(
                 self.data.bounds[: self.data.ndim]
             )
@@ -362,7 +362,7 @@ class BayesFit:
         converge_attempts: int = 10,
         solve_nuisance: bool = False,
         max_components: int = 5,
-        bw_method: Union[str, float] = "scott",
+        bw_method: str | float = "scott",
         verbose: int = 0,
     ) -> None:
         """Run Markov Chain Monte Carlo (MCMC) sampling to optimize parameters.
@@ -399,9 +399,9 @@ class BayesFit:
             mcmc_dim = len(self.data.bounds)
         else:
             if self.data.n_nuisance > 0:
-                assert (
-                    self.data.NUISANCE_ is not None
-                ), "Nuisance parameters specified but not solved "
+                assert self.data.NUISANCE_ is not None, (
+                    "Nuisance parameters specified but not solved "
+                )
             self.lower_bounds, self.upper_bounds = np.transpose(
                 self.data.bounds[: self.data.ndim]
             )
@@ -496,6 +496,9 @@ class BayesFit:
             max_components=max_components,
             bw_method=bw_method,
         )
+
+        # Store the multivariate GMM for later use
+        self.data.mcmc_results.multivariate_gmm = multivariate_gmm
 
         # Calculate BMA for the multivariate GMM
         bma_mean, bma_cov = calc_bma(multivariate_gmm)

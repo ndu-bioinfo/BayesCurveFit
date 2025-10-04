@@ -6,7 +6,7 @@ default_stages:
   - pre-merge-commit
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -14,22 +14,22 @@ repos:
       - id: mixed-line-ending
         args: [--fix=auto]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.1.0"
+    rev: "v4.0.0-alpha.8"
     hooks:
       - id: prettier
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: "3.0.3"
+    rev: "3.4.0"
     hooks:
       - id: editorconfig-checker
         alias: ec
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.6.26
+    rev: v1.7.7
     hooks:
       - id: actionlint
         # Disable shellcheck and pyflakes
         args: ["-shellcheck=", "-pyflakes="]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.7.3
+    rev: v0.13.3
     hooks:
       - id: ruff
         files: \.py$
@@ -38,5 +38,7 @@ repos:
             --exit-non-zero-on-fix,
             "--select",
             "I,E1,E4,E7,E9,F,UP,N",
+            "--ignore",
+            "N801,N806",
           ] # sort imports and fix (rules taken from nf-core/tools)
       - id: ruff-format # formatter

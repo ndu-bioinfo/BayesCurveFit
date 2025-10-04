@@ -18,12 +18,14 @@ Data and supplementary data used in the manuscript can be found at https://zenod
 
 The BayesCurveFit pipeline for processing Kinobeads data is available and can be found in the [examples/pipeline](https://github.com/ndu-bioinfo/BayesCurveFit/tree/main/examples/pipeline) directory of the repository.
 
-### Technical Details
+### Key Features
 
-- **Bayesian Model Averaging**: Uses Gaussian Mixture Models with proper law of total variance for covariance estimation
-- **MCMC Sampling**: Emcee-based sampling with convergence diagnostics (R-hat, effective sample size)
-- **Parameter Uncertainty**: Full covariance matrix estimation with proper correlation handling
-- **Model Comparison**: Posterior Error Probability (PEP) for model selection
+- **Multivariate Bayesian Model Averaging**: Single multivariate Gaussian Mixture Model captures cross-parameter correlations
+- **Robust MCMC Sampling**: Emcee-based sampling with automated convergence diagnostics (R-hat < 1.1, ESS > 100)
+- **Correlation-Aware Uncertainty**: Full covariance matrix estimation using law of total variance
+- **Model Selection**: Posterior Error Probability (PEP) for automated model comparison
+- **Outlier Handling**: Robust error estimation with nuisance parameter optimization
+- **Convergence Monitoring**: Automated diagnostics with multiple restart attempts
 
 ## Installation Guide
 
@@ -470,16 +472,18 @@ make install
 
 ### Version Management
 
-**Single source of truth: `src/bayescurvefit/__init__.py`**
+**Git tags are the single source of truth for versioning**
 
 **To release a new version:**
 
 1. **Run the script**: `python scripts/bump_version.py patch` (or `minor`/`major`)
-   - Updates `__init__.py`
+   - Updates `__init__.py` with new version
    - Commits the change
    - Creates and pushes git tag (e.g., `v0.6.2`)
 2. **Create GitHub release**: Go to [GitHub Releases](https://github.com/ndu-bioinfo/BayesCurveFit/releases), create release with the existing tag
-3. **Done!** GitHub Actions automatically publishes to PyPI
+3. **Done!** GitHub Actions automatically:
+   - Updates `pyproject.toml` with version from git tag
+   - Builds and publishes to PyPI
 
 **Available commands:**
 
@@ -488,6 +492,8 @@ python scripts/bump_version.py patch   # 0.6.1 → 0.6.2
 python scripts/bump_version.py minor   # 0.6.1 → 0.7.0
 python scripts/bump_version.py major   # 0.6.1 → 1.0.0
 ```
+
+**Note**: The version in `pyproject.toml` is automatically updated by GitHub Actions during the release process.
 
 ### Contributing
 

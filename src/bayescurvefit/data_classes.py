@@ -1,5 +1,5 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional, Tuple
 
 import numpy as np
 from sklearn.mixture import GaussianMixture
@@ -46,7 +46,8 @@ class MCMC_Results:
     LogP_: np.ndarray = None
     R_hat_: np.ndarray = None
     EFFECTIVE_SIZES_: np.ndarray = None
-    best_gmms: List[GaussianMixture] = None
+    best_gmms: list[GaussianMixture] = None
+    multivariate_gmm: GaussianMixture = None
 
     def get_samples(self, flat=False):
         samples = (
@@ -76,9 +77,7 @@ class MCMC_Results:
         )
 
     def get_posterior_dist(self, max_components: int = 5):
-        return fit_posterior(
-            self.get_samples(flat=True), max_components=max_components
-        )
+        return fit_posterior(self.get_samples(flat=True), max_components=max_components)
 
 
 @dataclass
@@ -91,8 +90,8 @@ class OLS_Results:
 class Data:
     x_data: np.ndarray
     y_data: np.ndarray
-    bounds: List[Tuple[float, float]]
-    param_names: Optional[List[str]] = None
+    bounds: list[tuple[float, float]]
+    param_names: list[str] | None = None
     ndim: int = 0
     n_nuisance: int = 0
     sa_results: SA_Results = field(default_factory=SA_Results)

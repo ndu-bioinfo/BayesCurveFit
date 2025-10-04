@@ -9,7 +9,7 @@ from scipy.interpolate import griddata
 from scipy.stats import norm
 
 from .data_classes import Data
-from .utils import truncated_normal, show_warning
+from .utils import show_warning, truncated_normal
 
 
 class BayesAnalysis:
@@ -80,7 +80,6 @@ class BayesAnalysis:
         contour_method,
         label,
     ):
-
         X, Y = np.meshgrid(
             np.linspace(x_param.min(), x_param.max(), 100),
             np.linspace(y_param.min(), y_param.max(), 100),
@@ -90,7 +89,6 @@ class BayesAnalysis:
         ax.contourf(X, Y, Z, cmap=contour_cmap, alpha=0.3, levels=contour_levels)
 
     def plot_pairwise_comparison(self, figsize=(8, 6), show_sa_path=True, **kwargs):
-
         default_kwargs = {
             "sampling_color": "orange",
             "contour_cmap": "Oranges_r",
@@ -184,9 +182,21 @@ class BayesAnalysis:
             else:
                 ax = axes
             x_data = np.linspace(*self.bounds[i], 1000)
-            y_data = np.exp(
-                self.data.mcmc_results.best_gmms[i].score_samples(x_data.reshape(-1, 1))
-            )
+            # For multivariate GMM, we need to create a 2D array with all parameters
+            # and then extract the marginal distribution for parameter i
+            if self.data.mcmc_results.multivariate_gmm is not None:
+                # Create a grid for all parameters, using optimal values for others
+                param_grid = np.tile(self.data.OPTIMAL_PARAM_, (len(x_data), 1))
+                param_grid[:, i] = x_data
+                y_data = np.exp(
+                    self.data.mcmc_results.multivariate_gmm.score_samples(param_grid)
+                )
+            else:
+                # Fallback: use normal distribution approximation
+                y_data = norm(
+                    loc=self.data.OPTIMAL_PARAM_[i],
+                    scale=self.data.OPTIMAL_PARAM_STD_[i],
+                ).pdf(x_data)
             sns.histplot(
                 samples[:, i],
                 bins=bins,
@@ -233,7 +243,7 @@ class BayesAnalysis:
         show_fitting_params=False,
         truth_params=None,
         show_ci: float = 0.95,
-        ax = None
+        ax=None,
     ):
         """
         Plot the fitted curve with confidence intervals, observations, and optional OLS and truth fits.
@@ -285,7 +295,7 @@ class BayesAnalysis:
                 y_upper,
                 color="#add8e6",
                 alpha=0.5,
-                label=f"{show_ci*100}% PI",
+                label=f"{show_ci * 100}% PI",
             )
 
         # Plot the observations
@@ -296,7 +306,9 @@ class BayesAnalysis:
             x=s_range,
             y=self.fit_func(s_range, *self.OPTIMAL_PARAM_),
             color="blue",
-            label=f"BayesCurveFit: {label_bayes_params}" if show_fitting_params else "BayesCurveFit",
+            label=f"BayesCurveFit: {label_bayes_params}"
+            if show_fitting_params
+            else "BayesCurveFit",
             ax=ax,
         )
 
