@@ -33,3 +33,6 @@ profile_default/
 
 # macOS
 .DS_Store
+
+# Node.js (for Prettier pre-commit hook)
+node_modules/
