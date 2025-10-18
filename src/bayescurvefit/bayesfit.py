@@ -8,7 +8,7 @@ from scipy.stats.qmc import LatinHypercube
 
 from .data_classes import Data
 from .utils import (
-    calc_bma,
+    calc_gmap,
     calculate_effective_size,
     fit_posterior,
     gelman_rubin,
@@ -500,12 +500,12 @@ class BayesFit:
         # Store the multivariate GMM for later use
         self.data.mcmc_results.multivariate_gmm = multivariate_gmm
 
-        # Calculate BMA for the multivariate GMM
-        bma_mean, bma_cov = calc_bma(multivariate_gmm)
+        # Calculate GMAP for the multivariate GMM
+        gmap_mean, gmap_cov = calc_gmap(multivariate_gmm)
 
         # Extract individual parameter means and standard deviations
-        self.data.OPTIMAL_PARAM_ = bma_mean  # Shape: (n_params,)
-        self.data.OPTIMAL_PARAM_STD_ = np.sqrt(np.diag(bma_cov))  # Shape: (n_params,)
+        self.data.OPTIMAL_PARAM_ = gmap_mean  # Shape: (n_params,)
+        self.data.OPTIMAL_PARAM_STD_ = np.sqrt(np.diag(gmap_cov))  # Shape: (n_params,)
 
         # Generate parameter combinations from multivariate GMM
         opt_params = list(multivariate_gmm.means_)  # Shape: (n_components, n_params)

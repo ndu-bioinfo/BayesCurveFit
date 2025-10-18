@@ -222,7 +222,7 @@ class BayesAnalysis:
                     loc=self.data.OPTIMAL_PARAM_[i],
                     scale=self.data.OPTIMAL_PARAM_STD_[i],
                 ).pdf(x_data),
-                label="BMA estimated distribution",
+                label="GMAP estimated distribution",
                 ax=ax,
                 color="blue",
                 dashes=[3, 1],
