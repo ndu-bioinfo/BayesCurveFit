@@ -1,5 +1,5 @@
 import warnings
-from typing import Callable, List, Tuple
+from collections.abc import Callable
 
 import numpy as np
 from scipy.optimize import OptimizeWarning, curve_fit
@@ -16,10 +16,10 @@ def ols_fitting(
     x_data: np.ndarray,
     y_data: np.ndarray,
     fit_func: Callable,
-    bounds: List[Tuple[List[float], List[float]]],
-    init_guess: List[float] = None,
+    bounds: list[tuple[list[float], list[float]]],
+    init_guess: list[float] = None,
     **kwargs,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Perform OLS fitting.
 
@@ -247,31 +247,31 @@ def fit_posterior(
     return best_gmm
 
 
-def calc_bma(best_gmm: GaussianMixture):
+def calc_gmap(best_gmm: GaussianMixture):
     """
-    Calculate the Bayesian Model Averaging (BMA) mean and covariance from a GMM.
+    Calculate the Gaussian Mixture Approximation of Posterior (GMAP) mean and covariance from a GMM.
 
     Args:
         best_gmm: GaussianMixture instance from fit_posterior.
 
     Returns:
-        bma_mean: Weighted average of means across components.
-        bma_cov: BMA covariance matrix.
+        gmap_mean: Weighted average of means across components.
+        gmap_cov: GMAP covariance matrix.
     """
     means = best_gmm.means_  # shape: (n_components, n_params)
     covariances = best_gmm.covariances_  # shape: (n_components, n_params, n_params)
     weights = best_gmm.weights_  # shape: (n_components,)
 
-    # Compute BMA mean
-    bma_mean = np.average(means, axis=0, weights=weights)
+    # Compute GMAP mean
+    gmap_mean = np.average(means, axis=0, weights=weights)
 
-    # Compute BMA covariance using law of total variance
-    bma_cov = sum(
-        w * (cov + np.outer(mean - bma_mean, mean - bma_mean))
+    # Compute GMAP covariance using law of total variance
+    gmap_cov = sum(
+        w * (cov + np.outer(mean - gmap_mean, mean - gmap_mean))
         for w, mean, cov in zip(weights, means, covariances)
     )
 
-    return bma_mean, bma_cov
+    return gmap_mean, gmap_cov
 
 
 def compute_pep(bic0: float, bic1: float):
