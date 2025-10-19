@@ -182,21 +182,8 @@ class BayesAnalysis:
             else:
                 ax = axes
             x_data = np.linspace(*self.bounds[i], 1000)
-            # For multivariate GMM, we need to create a 2D array with all parameters
-            # and then extract the marginal distribution for parameter i
-            if self.data.mcmc_results.multivariate_gmm is not None:
-                # Create a grid for all parameters, using optimal values for others
-                param_grid = np.tile(self.data.OPTIMAL_PARAM_, (len(x_data), 1))
-                param_grid[:, i] = x_data
-                y_data = np.exp(
-                    self.data.mcmc_results.multivariate_gmm.score_samples(param_grid)
-                )
-            else:
-                # Fallback: use normal distribution approximation
-                y_data = norm(
-                    loc=self.data.OPTIMAL_PARAM_[i],
-                    scale=self.data.OPTIMAL_PARAM_STD_[i],
-                ).pdf(x_data)
+
+            # Plot MCMC samples histogram
             sns.histplot(
                 samples[:, i],
                 bins=bins,
@@ -204,28 +191,20 @@ class BayesAnalysis:
                 alpha=0.3,
                 stat="density",
                 color=hist_color,
+                label="MCMC samples",
             )
-            valid_indices = y_data > 1e-3
-            y_data = y_data[valid_indices]
-            x_data = x_data[valid_indices]
-            y_data /= np.sum(y_data * (x_data[1] - x_data[0]))
+
+            # Plot GMAP approximation (the final posterior approximation)
+            y_data = norm(
+                loc=self.data.OPTIMAL_PARAM_[i],
+                scale=self.data.OPTIMAL_PARAM_STD_[i],
+            ).pdf(x_data)
             sns.lineplot(
                 x=x_data,
                 y=y_data,
-                label="GaussianMixture fitted distribution",
-                ax=ax,
-                color="red",
-            )
-            sns.lineplot(
-                x=x_data,
-                y=norm(
-                    loc=self.data.OPTIMAL_PARAM_[i],
-                    scale=self.data.OPTIMAL_PARAM_STD_[i],
-                ).pdf(x_data),
-                label="GMAP estimated distribution",
+                label="GMAP approximation",
                 ax=ax,
                 color="blue",
-                dashes=[3, 1],
             )
             ax.set_title(f"{self.param_names[i]} Density")
             ax.set_xlabel(f"{self.param_names[i]}")
