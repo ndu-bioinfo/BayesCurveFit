@@ -20,12 +20,12 @@ The BayesCurveFit pipeline for processing Kinobeads data is available and can be
 
 ### Key Features
 
-- **Multivariate Bayesian Model Averaging**: Single multivariate Gaussian Mixture Model captures cross-parameter correlations
-- **Robust MCMC Sampling**: Emcee-based sampling with automated convergence diagnostics (R-hat < 1.1, ESS > 100)
-- **Correlation-Aware Uncertainty**: Full covariance matrix estimation using law of total variance
-- **Model Selection**: Posterior Error Probability (PEP) for automated model comparison
-- **Outlier Handling**: Robust error estimation with nuisance parameter optimization
-- **Convergence Monitoring**: Automated diagnostics with multiple restart attempts
+- **Unified Multivariate Bayesian Framework**: A single multivariate Gaussian mixture model jointly infers all parameters, capturing cross-parameter correlations within one coherent structure.  
+- **Robust MCMC Inference**: Adaptive *emcee*-based sampling with automated convergence checks (R-hat < 1.1, ESS > 100).  
+- **Correlation-Aware Uncertainty Quantification**: Full covariance estimation via the law of total variance enables coherent multivariate uncertainty propagation.  
+- **Bayesian Model Comparison**: Posterior Error Probability (PEP) supports principled and automated model selection.  
+- **Outlier-Robust Estimation**: Nuisance parameter optimization down-weights influential outliers while preserving inference stability.  
+- **Automated Convergence Control**: Integrated diagnostics trigger restarts until convergence criteria are met.  
 
 ## Installation Guide
 
